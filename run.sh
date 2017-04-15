@@ -3,4 +3,7 @@
 set -eu
 
 scons
-time build/bin/main
+
+mkdir -p build/output
+
+time build/bin/main build/output/apollonian.png
