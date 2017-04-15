@@ -1,6 +1,8 @@
 import os
 
-env = Environment()
+env = Environment(CCFLAGS=['-std=c++11', '-O3', '-DNDEBUG',
+                           '-march=native', '-mtune=native',
+                           '-Wall', '-Wextra', '-Werror'])
 
 for v in ['CC', 'CXX']:
     if v in os.environ:
