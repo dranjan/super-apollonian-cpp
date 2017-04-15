@@ -24,7 +24,7 @@ CairoRenderer::CairoRenderer(
 }
 
 void
-CairoRenderer::save(const std::string& filename) {
+CairoRenderer::save(const std::string& filename) const {
     surface_->write_to_png(filename);
 }
 

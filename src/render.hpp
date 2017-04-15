@@ -19,7 +19,7 @@ public:
 
 public:
     void render_circle(const Circle& circle, const RGBColor& color);
-    void save(const std::string& filename);
+    void save(const std::string& filename) const;
 
 public:
     double xmin_;
