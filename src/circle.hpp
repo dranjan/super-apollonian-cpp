@@ -30,7 +30,7 @@ template <>
 inline Circle
 MobiusTransformation::operator () (const Circle& t) const {
     MobiusTransformation m = inverse();
-    return Circle(m.v_.adjoint()*v_*m.v_);
+    return Circle(m.v_.adjoint()*t.v_*m.v_);
 }
 
 inline
@@ -73,7 +73,7 @@ Circle::center() const {
 
 inline double
 Circle::radius() const {
-    return std::sqrt(-det(v_)/v_(0,0)).real();
+    return (std::sqrt(-det(v_))/v_(0,0)).real();
 }
 
 } // appollonian
