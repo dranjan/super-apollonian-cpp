@@ -21,7 +21,9 @@ env.ParseConfig('pkg-config --cflags --libs eigen3 cairomm-1.0')
 
 env.Program('build/bin/main',
             source=['src/main.cpp',
+                    'src/riemann_sphere.cpp',
                     'src/mobius.cpp',
+                    'src/apollonian.cpp',
                     'src/circle.cpp',
                     'src/color.cpp',
                     'src/render.cpp'])

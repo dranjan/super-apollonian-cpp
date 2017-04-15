@@ -13,6 +13,8 @@ using Complex = std::complex<double>;
 using Matrix = Eigen::Matrix2cd;
 using Vector = Eigen::Vector2cd;
 
+extern const Complex i;
+
 /* Projective complex number */
 class PComplex {
 public:
