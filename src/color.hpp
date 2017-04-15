@@ -11,7 +11,7 @@ public:
     RGBColor(double r, double g, double b);
     RGBColor(uint32_t h);
 
-    RGBColor blend(const RGBColor& other, double alpha);
+    RGBColor blend(const RGBColor& other, double alpha) const;
 
     static const RGBColor white;
     static const RGBColor black;
