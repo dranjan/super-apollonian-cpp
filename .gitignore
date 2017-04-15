@@ -5,3 +5,4 @@
 *.png
 build/
 bin/
+.sconsign.dblite
