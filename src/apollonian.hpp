@@ -42,10 +42,10 @@ public:
     ApollonianGenerators inverse() const;
 
     template <typename F>
-    void iterate_triangle(double threshold, F callback);
+    void iterate_triangle(double threshold, F& callback);
 
     template <typename F>
-    void iterate(double threshold, F callback);
+    void iterate(double threshold, F& callback);
 
 public:
     ApollonianState m0_;
@@ -93,7 +93,7 @@ ApollonianGenerators::ApollonianGenerators(const ApollonianState& m0,
 
 template <typename F>
 void
-ApollonianGenerators::iterate_triangle(double threshold, F callback) {
+ApollonianGenerators::iterate_triangle(double threshold, F& callback) {
     Circle c;
     size_t p[4] = {0, 1, 2, 3};
     size_t q[4];
@@ -122,7 +122,7 @@ ApollonianGenerators::iterate_triangle(double threshold, F callback) {
 
 template <typename F>
 void
-ApollonianGenerators::iterate(double threshold, F callback) {
+ApollonianGenerators::iterate(double threshold, F& callback) {
     Circle c;
     size_t p[4] = {0, 1, 2, 3};
     size_t q[4];
