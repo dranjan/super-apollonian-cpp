@@ -40,11 +40,11 @@ PComplex::PComplex(const Complex& numerator,
 inline
 PComplex::PComplex(const Complex& value) {
     if (std::isinf(value.real()) || std::isinf(value.imag())) {
-        v_(0) = Complex(1.0);
-        v_(1) = Complex(0.0);
+        v_(0) = 1;
+        v_(1) = 0;
     } else {
         v_(0) = value;
-        v_(1) = Complex(1.0);
+        v_(1) = 1;
     }
 }
 
