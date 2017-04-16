@@ -78,10 +78,10 @@ ApollonianState::operator Circle () const {
     return m_(c3);
 }
 
-template <typename F>
+template <typename Visitor>
 void
 generate_apollonian_triangle(const ApollonianState& initial_state,
-                             double threshold, F& callback)
+                             double threshold, Visitor& visitor)
 {
     /* This could equally well be done with explicit recursion, but we
      * use an explicit stack as a more lightweight alternative.
@@ -92,7 +92,7 @@ generate_apollonian_triangle(const ApollonianState& initial_state,
     while (stack.size()) {
         ApollonianState state = stack.back();
         stack.pop_back();
-        callback(state);
+        visitor(state);
         if (state.size() >= threshold) {
             stack.push_back(state*ApollonianState::m0);
             stack.push_back(state*ApollonianState::m1);
@@ -113,27 +113,30 @@ generate_apollonian_triangle(const ApollonianState& initial_state,
  * triangle is the intersection of the full gasket with the complement
  * of the four canonical disks and the upper half plane.
  *
- * `callback' is a callable that is to be called once on each disk in
- * the complement.  The order of the disks is unspecified.
+ * `visitor' is a callable that is to be called once on each disk in
+ * the complement.  The order of the disks is unspecified.  The visitor
+ * show be callable as
+ *
+ *     void operator () (const ApollonianState& s);
  */
-template <typename F>
+template <typename Visitor>
 void
 generate_apollonian_gasket(
         const PComplex& z0, const PComplex& z1, const PComplex& z2,
-        double threshold, F& callback)
+        double threshold, Visitor& visitor)
 {
     MobiusTransformation m
         = MobiusTransformation::cross_ratio(z0, z1, z2).inverse();
     m.normalize();
     ApollonianState state(m, Permutation<4>::identity);
 
-    callback(state*ApollonianState::m0.inverse());
-    callback(state*ApollonianState::m1.inverse());
-    callback(state*ApollonianState::m2.inverse());
+    visitor(state*ApollonianState::m0.inverse());
+    visitor(state*ApollonianState::m1.inverse());
+    visitor(state*ApollonianState::m2.inverse());
 
-    generate_apollonian_triangle(state, threshold, callback);
+    generate_apollonian_triangle(state, threshold, visitor);
     generate_apollonian_triangle(state*ApollonianState::inv,
-                                 threshold, callback);
+                                 threshold, visitor);
 }
 
 } // apollonian
