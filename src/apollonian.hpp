@@ -98,10 +98,9 @@ generate_apollonian_gasket(
     m.normalize();
     ApollonianState state(m, Permutation<4>::identity);
 
-    ApollonianState inv(
-            { -1i, 1i,
-                0, 1i},
-            {0, 2, 1, 3});
+    ApollonianState inv{{ -1i, 1i,
+                            0, 1i},
+                        {0, 2, 1, 3}};
 
     callback(state*ApollonianState::m0.inverse());
     callback(state*ApollonianState::m1.inverse());

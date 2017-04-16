@@ -5,12 +5,12 @@ namespace apollonian {
 CairoRenderer::CairoRenderer(
         size_t w, size_t h, const Complex& center, double pixel_res,
         const RGBColor& color)
-    : xmin_(center.real() - w/(2*pixel_res)),
-      xmax_(center.real() + w/(2*pixel_res)),
-      ymin_(center.imag() - h/(2*pixel_res)),
-      ymax_(center.imag() + h/(2*pixel_res)),
-      surface_(Cairo::ImageSurface::create(Cairo::FORMAT_ARGB32, w, h)),
-      ctx_(Cairo::Context::create(surface_))
+    : xmin_{center.real() - w/(2*pixel_res)},
+      xmax_{center.real() + w/(2*pixel_res)},
+      ymin_{center.imag() - h/(2*pixel_res)},
+      ymax_{center.imag() + h/(2*pixel_res)},
+      surface_{Cairo::ImageSurface::create(Cairo::FORMAT_ARGB32, w, h)},
+      ctx_{Cairo::Context::create(surface_)}
 {
     ctx_->scale(pixel_res, pixel_res);
     ctx_->translate(w/(2*pixel_res), h/(2*pixel_res));

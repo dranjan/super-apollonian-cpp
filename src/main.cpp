@@ -32,9 +32,9 @@ int main(int argc, char* argv[]) {
         RGBColor::decode24(0x111111),
     };
 
-    Complex a(1.0);
-    Complex b(std::exp(2i*(M_PI/3)));
-    Complex c(std::exp(-2i*(M_PI/3)));
+    Complex a{1.0};
+    Complex b{std::exp(2i*(M_PI/3))};
+    Complex c{std::exp(-2i*(M_PI/3))};
 
     MobiusTransformation m
         = MobiusTransformation::cross_ratio(a, b, c).inverse();

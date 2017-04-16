@@ -60,13 +60,13 @@ MobiusTransformation::MobiusTransformation(
 
 inline MobiusTransformation
 MobiusTransformation::inverse() const {
-    return MobiusTransformation( v_(1,1), -v_(0,1),
-                                -v_(1,0),  v_(0,0));
+    return MobiusTransformation{ v_(1,1), -v_(0,1),
+                                -v_(1,0),  v_(0,0)};
 }
 
 inline MobiusTransformation
 MobiusTransformation::operator * (const MobiusTransformation& other) const {
-    return MobiusTransformation(v_ * other.v_);
+    return MobiusTransformation{v_ * other.v_};
 }
 
 inline void
@@ -78,8 +78,8 @@ inline MobiusTransformation
 MobiusTransformation::cross_ratio(
         const Complex& z0, const Complex& z1, const Complex& z2)
 {
-    return MobiusTransformation(z0 - z2, z1*(z2 - z0),
-                                z1 - z2, z0*(z2 - z1));
+    return MobiusTransformation{z0 - z2, z1*(z2 - z0),
+                                z1 - z2, z0*(z2 - z1)};
 }
 
 template <>
