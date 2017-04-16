@@ -2,6 +2,7 @@
 #define PERMUTATION_HPP
 
 #include <cstdlib>
+#include <array>
 
 namespace apollonian {
 
@@ -26,7 +27,7 @@ public:
     static const Permutation<N> identity;
 
 public:
-    size_t v_[N];
+    std::array<size_t, N> v_;
 };
 
 template <size_t N>
@@ -58,7 +59,7 @@ Permutation<N>
 Permutation<N>::operator * (const Permutation<N>& other) const
 {
     Permutation<N> p;
-    (*this)(other.v_, p.v_);
+    (*this)(other.v_.cbegin(), p.v_.begin());
     return p;
 }
 
