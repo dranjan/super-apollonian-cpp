@@ -40,13 +40,16 @@ int main(int argc, char* argv[]) {
         = MobiusTransformation::cross_ratio(a, b, c).inverse();
     double r0 = m(ApollonianState::c0).radius();
 
-    auto callback = [&r0, &colors, &renderer] (const ApollonianState& s)
+    auto callback
+        = [&r0, &colors, &renderer] (const ApollonianState& s)
     {
         Circle c = s;
         double r1 = c.radius();
         if (r1 < 0 || r1 > r0) r1 = r0;
         double f = 1.0/(1.0 - 0.5*std::log(r1/r0));
-        renderer.render_circle(c, colors[s.p_.v_[3]].blend(RGBColor::white, 1 - f));
+        RGBColor color = colors[s.p_.v_[3]].blend(RGBColor::white,
+                                                  1 - f);
+        renderer.render_circle(c, color);
     };
 
     generate_apollonian_gasket(a, b, c, 1.0/res, callback);
