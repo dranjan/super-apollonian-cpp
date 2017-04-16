@@ -1,6 +1,6 @@
 import os
 
-env = Environment(CCFLAGS=['-std=c++11', '-O3', '-DNDEBUG',
+env = Environment(CCFLAGS=['-std=c++14', '-O3', '-DNDEBUG',
                            '-march=native', '-mtune=native',
                            '-Wall', '-Wextra', '-Werror'])
 
@@ -21,7 +21,6 @@ env.ParseConfig('pkg-config --cflags --libs eigen3 cairomm-1.0')
 
 env.Program('build/bin/main',
             source=['src/main.cpp',
-                    'src/riemann_sphere.cpp',
                     'src/mobius.cpp',
                     'src/apollonian.cpp',
                     'src/circle.cpp',

@@ -33,8 +33,8 @@ int main(int argc, char* argv[]) {
     };
 
     Complex a(1.0);
-    Complex b(std::exp(2*M_PI/3*i));
-    Complex c(std::exp(-2*M_PI/3*i));
+    Complex b(std::exp(2i*(M_PI/3)));
+    Complex c(std::exp(-2i*(M_PI/3)));
 
     MobiusTransformation m
         = MobiusTransformation::cross_ratio(a, b, c).inverse();

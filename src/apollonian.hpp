@@ -98,10 +98,10 @@ generate_apollonian_gasket(
     m.normalize();
     ApollonianState state(m, Permutation<4>::identity);
 
-    MobiusTransformation n(Complex(-1.0), Complex(1.0),
-                           Complex( 0.0), Complex(1.0));
-    n.normalize();
-    ApollonianState inv(n, Permutation<4>::transposition(1, 2));
+    ApollonianState inv(
+            { -1i, 1i,
+                0, 1i},
+            Permutation<4>::transposition(1, 2));
 
     callback(state*ApollonianState::m0.inverse());
     callback(state*ApollonianState::m1.inverse());
