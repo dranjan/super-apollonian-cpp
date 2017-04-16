@@ -42,8 +42,8 @@ Circle::Circle(const Complex& v00, const Complex& v01,
 inline
 Circle::Circle(const Complex& center, double radius)
 {
-    v_ << Complex(1.0),       center,
-          std::conj(center),  Complex(std::norm(center) - radius*radius);
+    v_ << 1,                  center,
+          std::conj(center),  std::norm(center) - radius*radius;
     v_ /= radius;
 }
 
