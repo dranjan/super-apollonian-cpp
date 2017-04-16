@@ -9,7 +9,9 @@ class RGBColor {
 public:
     RGBColor() = default;
     RGBColor(double r, double g, double b);
-    RGBColor(uint32_t h);
+
+    static RGBColor
+    decode24(uint32_t h);
 
     RGBColor blend(const RGBColor& other, double alpha) const;
 
@@ -27,12 +29,14 @@ inline RGBColor::RGBColor(double r, double g, double b)
 {
 }
 
-inline RGBColor::RGBColor(uint32_t h) {
-    b_ = (h & 0xff) / 255.0;
+inline RGBColor
+RGBColor::decode24(uint32_t h) {
+    double b = (h & 0xff) / 255.0;
     h >>= 8;
-    g_ = (h & 0xff) / 255.0;
+    double g = (h & 0xff) / 255.0;
     h >>= 8;
-    r_ = (h & 0xff) / 255.0;
+    double r = (h & 0xff) / 255.0;
+    return RGBColor(r, g, b);
 }
 
 inline RGBColor

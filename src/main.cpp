@@ -26,10 +26,10 @@ int main(int argc, char* argv[]) {
                            RGBColor::black);
 
     RGBColor colors[4] = {
-        RGBColor(0xa0fa0f),
-        RGBColor(0x0fa0fa),
-        RGBColor(0xfa0fa0),
-        RGBColor(0x111111),
+        RGBColor::decode24(0xa0fa0f),
+        RGBColor::decode24(0x0fa0fa),
+        RGBColor::decode24(0xfa0fa0),
+        RGBColor::decode24(0x111111),
     };
 
     Complex a(1.0);
