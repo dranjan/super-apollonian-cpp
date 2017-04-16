@@ -101,7 +101,7 @@ generate_apollonian_gasket(
     ApollonianState inv(
             { -1i, 1i,
                 0, 1i},
-            Permutation<4>::transposition(1, 2));
+            {0, 2, 1, 3});
 
     callback(state*ApollonianState::m0.inverse());
     callback(state*ApollonianState::m1.inverse());

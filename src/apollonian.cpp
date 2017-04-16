@@ -9,17 +9,17 @@ const ApollonianState ApollonianState::identity(
 const ApollonianState ApollonianState::m0(
         {1,    1i,
          0,  1   },
-        Permutation<4>::transposition(0, 3));
+        {3, 1, 2, 0});
 
 const ApollonianState ApollonianState::m1(
         { 1,    0,
            -1i, 1},
-        Permutation<4>::transposition(1, 3));
+        {0, 3, 2, 1});
 
 const ApollonianState ApollonianState::m2(
         {1.0-1i,     1i,
             -1i, 1.0+1i},
-        Permutation<4>::transposition(2, 3));
+        {0, 1, 3, 2});
 
 const Circle ApollonianState::c0{ 0, -1,
                                  -1,  2};

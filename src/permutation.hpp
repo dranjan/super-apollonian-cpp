@@ -40,7 +40,7 @@ Permutation<N>::Permutation() {
 template <size_t N>
 template <typename... T>
 Permutation<N>::Permutation(T... args)
-    : v_{args...}
+    : v_{size_t(args)...}
 {
 }
 
