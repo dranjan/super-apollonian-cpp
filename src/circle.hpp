@@ -14,7 +14,7 @@ public:
     Circle(const Complex& v00, const Complex& v01,
            const Complex& v10, const Complex& v11);
     Circle(const Complex& center, double radius);
-    Circle(const Complex& z0, const Complex& z1, const Complex& z2);
+    Circle(const PComplex& z0, const PComplex& z1, const PComplex& z2);
     Circle(const Matrix& v);
 
     Complex center() const;
@@ -55,7 +55,7 @@ Circle::Circle(const Matrix& v)
 
 inline
 Circle::Circle(
-        const Complex& z0, const Complex& z1, const Complex& z2)
+        const PComplex& z0, const PComplex& z1, const PComplex& z2)
 {
     MobiusTransformation m
         = MobiusTransformation::cross_ratio(z0, z1, z2).inverse();

@@ -12,8 +12,8 @@ public:
                          const Complex& v10, const Complex& v11);
     MobiusTransformation(const Matrix& v);
     MobiusTransformation(
-            const Complex& z0, const Complex& z1, const Complex& z2,
-            const Complex& w0, const Complex& w1, const Complex& w2);
+            const PComplex& z0, const PComplex& z1, const PComplex& z2,
+            const PComplex& w0, const PComplex& w1, const PComplex& w2);
 
     MobiusTransformation inverse() const;
     MobiusTransformation operator * (
@@ -22,7 +22,7 @@ public:
     void normalize();
 
     static MobiusTransformation
-    cross_ratio(const Complex& z0, const Complex& z1, const Complex& z2);
+    cross_ratio(const PComplex& z0, const PComplex& z1, const PComplex& z2);
 
     static const MobiusTransformation identity;
 
@@ -49,8 +49,8 @@ MobiusTransformation::MobiusTransformation(const Matrix& v)
 
 inline
 MobiusTransformation::MobiusTransformation(
-        const Complex& z0, const Complex& z1, const Complex& z2,
-        const Complex& w0, const Complex& w1, const Complex& w2)
+        const PComplex& z0, const PComplex& z1, const PComplex& z2,
+        const PComplex& w0, const PComplex& w1, const PComplex& w2)
 {
     MobiusTransformation p = cross_ratio(z0, z1, z2);
     MobiusTransformation q = cross_ratio(w0, w1, w2);
@@ -76,10 +76,18 @@ MobiusTransformation::normalize() {
 
 inline MobiusTransformation
 MobiusTransformation::cross_ratio(
-        const Complex& z0, const Complex& z1, const Complex& z2)
+        const PComplex& z0, const PComplex& z1, const PComplex& z2)
 {
-    return MobiusTransformation{z0 - z2, z1*(z2 - z0),
-                                z1 - z2, z0*(z2 - z1)};
+    const Complex& a0(z0.v_(0));
+    const Complex& a1(z1.v_(0));
+    const Complex& a2(z2.v_(0));
+
+    const Complex& b0(z0.v_(1));
+    const Complex& b1(z1.v_(1));
+    const Complex& b2(z2.v_(1));
+
+    return MobiusTransformation{b1*(a0*b2 - a2*b0), a1*(a2*b0 - a0*b2),
+                                b0*(a1*b2 - a2*b1), a0*(a2*b1 - a1*b2)};
 }
 
 template <>

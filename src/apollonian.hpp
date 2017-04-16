@@ -91,7 +91,7 @@ generate_apollonian_triangle(const ApollonianState& initial_state,
 template <typename F>
 void
 generate_apollonian_gasket(
-        const Complex& z0, const Complex& z1, const Complex& z2,
+        const PComplex& z0, const PComplex& z1, const PComplex& z2,
         double threshold, F& callback)
 {
     MobiusTransformation m
