@@ -20,8 +20,6 @@ public:
     Complex center() const;
     double radius() const;
 
-    static const Circle unit_circle;
-
 public:
     Matrix v_;
 };

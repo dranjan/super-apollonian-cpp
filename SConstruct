@@ -23,6 +23,5 @@ env.Program('build/bin/main',
             source=['src/main.cpp',
                     'src/mobius.cpp',
                     'src/apollonian.cpp',
-                    'src/circle.cpp',
                     'src/color.cpp',
                     'src/render.cpp'])
