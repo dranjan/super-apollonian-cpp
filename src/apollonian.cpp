@@ -18,6 +18,10 @@ const ApollonianState ApollonianState::m2{{1.0-1i,     1i,
                                               -1i, 1.0+1i},
                                           {0, 1, 3, 2}};
 
+const ApollonianState ApollonianState::inv{{ -1i, 1i,
+                                               0, 1i},
+                                           {0, 2, 1, 3}};
+
 const Circle ApollonianState::c0{ 0, -1,
                                  -1,  2};
 

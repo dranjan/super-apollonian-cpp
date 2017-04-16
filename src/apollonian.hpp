@@ -25,6 +25,7 @@ public:
     static const ApollonianState m0;
     static const ApollonianState m1;
     static const ApollonianState m2;
+    static const ApollonianState inv;
 
     static const Circle c0;
     static const Circle c1;
@@ -98,16 +99,13 @@ generate_apollonian_gasket(
     m.normalize();
     ApollonianState state(m, Permutation<4>::identity);
 
-    ApollonianState inv{{ -1i, 1i,
-                            0, 1i},
-                        {0, 2, 1, 3}};
-
     callback(state*ApollonianState::m0.inverse());
     callback(state*ApollonianState::m1.inverse());
     callback(state*ApollonianState::m2.inverse());
 
     generate_apollonian_triangle(state, threshold, callback);
-    generate_apollonian_triangle(state*inv, threshold, callback);
+    generate_apollonian_triangle(state*ApollonianState::inv,
+                                 threshold, callback);
 }
 
 } // apollonian
