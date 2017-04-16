@@ -18,41 +18,22 @@ public:
     ApollonianState inverse() const;
     ApollonianState operator * (const ApollonianState& other) const;
 
-    double size(const Complex& z0, const Complex& z1, const Complex& z2) const;
+    double size() const;
+    operator Circle () const;
 
     static const ApollonianState identity;
+    static const ApollonianState m0;
+    static const ApollonianState m1;
+    static const ApollonianState m2;
+
+    static const Circle c0;
+    static const Circle c1;
+    static const Circle c2;
+    static const Circle c3;
 
 public:
     MobiusTransformation m_;
     Permutation<4> p_;
-};
-
-class ApollonianGenerators {
-public:
-    ApollonianGenerators(const ApollonianState& m0,
-                         const ApollonianState& m1,
-                         const ApollonianState& m2,
-                         const Circle& c);
-
-    static ApollonianGenerators
-    create(const Complex& a0, const Complex& a1, const Complex& a2);
-
-    void get_vertices(Complex& a0, Complex& a1, Complex& a2) const;
-
-    ApollonianGenerators inverse() const;
-
-    template <typename F>
-    void iterate_triangle(double threshold, F& callback);
-
-    template <typename F>
-    void iterate(double threshold, F& callback);
-
-public:
-    ApollonianState m0_;
-    ApollonianState m1_;
-    ApollonianState m2_;
-
-    Circle c_;
 };
 
 inline
@@ -73,76 +54,61 @@ ApollonianState::operator * (const ApollonianState& other) const {
 }
 
 inline double
-ApollonianState::size(
-        const Complex& z0, const Complex& z1, const Complex& z2) const
+ApollonianState::size() const
 {
-    Complex w0 = m_(z0);
-    Complex w1 = m_(z1);
-    Complex w2 = m_(z2);
+    Complex w0 = m_.v_(0,0)/m_.v_(1,0);
+    Complex w1 = m_.v_(0,1)/m_.v_(1,1);
+    Complex w2 = (m_.v_(0,0) + m_.v_(0,1))/(m_.v_(1,0) + m_.v_(1,1));
     return std::max({std::abs(w0 - w1), std::abs(w1 - w2), std::abs(w2 - w0)});
 }
 
 inline
-ApollonianGenerators::ApollonianGenerators(const ApollonianState& m0,
-                                           const ApollonianState& m1,
-                                           const ApollonianState& m2,
-                                           const Circle& c)
-    : m0_{m0}, m1_{m1}, m2_{m2}, c_{c}
-{
+ApollonianState::operator Circle () const {
+    return m_(c3);
 }
 
 template <typename F>
 void
-ApollonianGenerators::iterate_triangle(double threshold, F& callback) {
-    Circle c;
-    size_t p[4] = {0, 1, 2, 3};
-    size_t q[4];
-
-    Complex a0;
-    Complex a1;
-    Complex a2;
-    get_vertices(a0, a1, a2);
-
+generate_apollonian_triangle(const ApollonianState& initial_state,
+                             double threshold, F& callback)
+{
     std::vector<ApollonianState> stack;
-    stack.push_back(ApollonianState::identity);
+    stack.push_back(initial_state);
 
     while (stack.size()) {
         ApollonianState state = stack.back();
         stack.pop_back();
-        c = state.m_(c_);
-        state.p_(p, q);
-        callback(c, q);
-        if (state.size(a0, a1, a2) >= threshold) {
-            stack.push_back(state*m0_);
-            stack.push_back(state*m1_);
-            stack.push_back(state*m2_);
+        callback(state);
+        if (state.size() >= threshold) {
+            stack.push_back(state*ApollonianState::m0);
+            stack.push_back(state*ApollonianState::m1);
+            stack.push_back(state*ApollonianState::m2);
         }
     }
 }
 
 template <typename F>
 void
-ApollonianGenerators::iterate(double threshold, F& callback) {
-    Circle c;
-    size_t p[4] = {0, 1, 2, 3};
-    size_t q[4];
+generate_apollonian_gasket(
+        const Complex& z0, const Complex& z1, const Complex& z2,
+        double threshold, F& callback)
+{
+    MobiusTransformation m
+        = MobiusTransformation::cross_ratio(z0, z1, z2).inverse();
+    m.normalize();
+    ApollonianState state(m, Permutation<4>::identity);
 
-    ApollonianGenerators inv = inverse();
+    MobiusTransformation n(Complex(-1.0), Complex(1.0),
+                           Complex( 0.0), Complex(1.0));
+    n.normalize();
+    ApollonianState inv(n, Permutation<4>::transposition(1, 2));
 
-    c = inv.m0_.m_(c_);
-    inv.m0_.p_(p, q);
-    callback(c, q);
+    callback(state*ApollonianState::m0.inverse());
+    callback(state*ApollonianState::m1.inverse());
+    callback(state*ApollonianState::m2.inverse());
 
-    c = inv.m1_.m_(c_);
-    inv.m1_.p_(p, q);
-    callback(c, q);
-
-    c = inv.m2_.m_(c_);
-    inv.m2_.p_(p, q);
-    callback(c, q);
-
-    iterate_triangle(threshold, callback);
-    inv.iterate_triangle(threshold, callback);
+    generate_apollonian_triangle(state, threshold, callback);
+    generate_apollonian_triangle(state*inv, threshold, callback);
 }
 
 } // apollonian

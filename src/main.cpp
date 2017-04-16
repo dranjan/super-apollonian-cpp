@@ -25,13 +25,6 @@ int main(int argc, char* argv[]) {
     CairoRenderer renderer(w, h, Complex(0.0), res,
                            RGBColor::black);
 
-    Complex a(1.0);
-    Complex b(std::exp(2*M_PI/3*i));
-    Complex c(std::exp(-2*M_PI/3*i));
-
-    ApollonianGenerators A
-        = ApollonianGenerators::create(a, b, c);
-
     RGBColor colors[4] = {
         RGBColor(0xa0fa0f),
         RGBColor(0x0fa0fa),
@@ -39,17 +32,24 @@ int main(int argc, char* argv[]) {
         RGBColor(0x111111),
     };
 
-    double r0 = A.m0_.m_.inverse()(A.c_).radius();
-    auto callback = [&r0, &colors, &A, &renderer] (const Circle& c,
-                                                   const size_t* q)
+    Complex a(1.0);
+    Complex b(std::exp(2*M_PI/3*i));
+    Complex c(std::exp(-2*M_PI/3*i));
+
+    MobiusTransformation m
+        = MobiusTransformation::cross_ratio(a, b, c).inverse();
+    double r0 = m(ApollonianState::c0).radius();
+
+    auto callback = [&r0, &colors, &renderer] (const ApollonianState& s)
     {
+        Circle c = s;
         double r1 = c.radius();
         if (r1 < 0 || r1 > r0) r1 = r0;
         double f = 1.0/(1.0 - 0.5*std::log(r1/r0));
-        renderer.render_circle(c, colors[q[3]].blend(RGBColor::white, 1 - f));
+        renderer.render_circle(c, colors[s.p_.v_[3]].blend(RGBColor::white, 1 - f));
     };
 
-    A.iterate(1.0/res, callback);
+    generate_apollonian_gasket(a, b, c, 1.0/res, callback);
 
     renderer.save(filename);
 
