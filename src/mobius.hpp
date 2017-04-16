@@ -5,6 +5,16 @@
 
 namespace apollonian {
 
+/* A Mobius transformation is an invertible linear transformation of the
+ * projective complex plane.  In non-projective terms, it is a linear
+ * fractional transformation, i.e.,
+ *
+ *     z -> (a*z + b)/(c*z + d)
+ *
+ * for some a, b, c, and d.  The 2 by 2 matrix representation, which
+ * follows immediately from the projective definition, is very
+ * convenient.
+ */
 class MobiusTransformation {
 public:
     MobiusTransformation() = default;

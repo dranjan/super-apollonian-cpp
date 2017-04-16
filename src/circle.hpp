@@ -8,6 +8,25 @@
 
 namespace apollonian {
 
+/* A generalized circle is defined as the locus of a sesquilinear form
+ *
+ *     adjoint(z)*C*z == 0,
+ *
+ * where z is a projective complex number and C is a self-adjoint 2 by 2
+ * complex matrix with determinant -1.
+ *
+ * -C and C define the same equality locus, so the matrix actually
+ * contains one extra bit of information, which can be used to select
+ * one component of the complement of the circle according to
+ *
+ *     adjoint(z)*C*z <= 0.
+ *
+ * Alernatively, the extra bit can be thought of as selecting an
+ * orientation of the circle according to some convention.
+ *
+ * The "disk" interpretation in particular is pretty useful for us, so
+ * we choose signs consistently.
+ */
 class Circle {
 public:
     Circle() = default;
@@ -21,6 +40,9 @@ public:
     double radius() const;
 
 public:
+    /* XXX This representation is wasteful, since a generalized circle
+     * only has three degrees of freedom.
+     */
     Matrix v_;
 };
 

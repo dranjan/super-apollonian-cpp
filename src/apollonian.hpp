@@ -22,6 +22,16 @@ public:
     operator Circle () const;
 
     static const ApollonianState identity;
+
+    /* These transformations and disks describe the "canonical"
+     * Apollonian gasket.  An arbitrary Apollonian gasket can be
+     * expressed as the image of the canonical gasket under a Mobius
+     * transformation, with the transformation being conveniently
+     * determined by the tangency points of three of the mutually
+     * tangent disks (see generate_apollonian_gasket).
+     *
+     * See the .cpp file for more details.
+     */
     static const ApollonianState m0;
     static const ApollonianState m1;
     static const ApollonianState m2;
@@ -73,6 +83,9 @@ void
 generate_apollonian_triangle(const ApollonianState& initial_state,
                              double threshold, F& callback)
 {
+    /* This could equally well be done with explicit recursion, but we
+     * use an explicit stack as a more lightweight alternative.
+     */
     std::vector<ApollonianState> stack;
     stack.push_back(initial_state);
 
@@ -88,6 +101,21 @@ generate_apollonian_triangle(const ApollonianState& initial_state,
     }
 }
 
+/* This is the primary entry point to this module.
+ *
+ * `z0', `z1', and `z2' are the tangency points of the three mutually
+ * tangent circles that intuitively start the iteration.
+ *
+ * `threshold' is (*very* approximately) how small the "Apollonian
+ * triangle" corresponding to a state can get before we stop iterating.
+ * The Apollonian triangle for a state is the image of the canonical
+ * triangle under the corresponding transformation, where the canonical
+ * triangle is the intersection of the full gasket with the complement
+ * of the four canonical disks and the upper half plane.
+ *
+ * `callback' is a callable that is to be called once on each disk in
+ * the complement.  The order of the disks is unspecified.
+ */
 template <typename F>
 void
 generate_apollonian_gasket(
