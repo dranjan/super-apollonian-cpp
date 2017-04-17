@@ -9,6 +9,20 @@
 
 namespace apollonian {
 
+/* An "Apollonian state" describes a configuration of four mutually
+ * tangent circles (or disks with disjoint interiors) that may be
+ * encountered while recursively generating an Apollonian gasket.  More
+ * simply, it describes a single "new" circle.
+ *
+ * It is represented here as a Mobius transformation that transforms the
+ * "canonical" four-circle configuration to the current one.
+ *
+ * Each state also contains a permutation on four elements.  If the
+ * disks comprising the complement of the Apollonian gasket are labeled
+ * with four colors such that no two tangent circles have the same
+ * label, then this permutation maps the labels of the four starting
+ * circles to the current four-circle configuration.
+ */
 class ApollonianState {
 public:
     ApollonianState() = default;
@@ -23,7 +37,7 @@ public:
 
     static const ApollonianState identity;
 
-    /* These transformations and disks describe the "canonical"
+    /* These transformations and disks describe the canonical
      * Apollonian gasket.  An arbitrary Apollonian gasket can be
      * expressed as the image of the canonical gasket under a Mobius
      * transformation, with the transformation being conveniently
@@ -64,6 +78,10 @@ ApollonianState::operator * (const ApollonianState& other) const {
     return ApollonianState(m_*other.m_, other.p_*p_);
 }
 
+/* This is an approximation to the diamater of the Apollonian
+ * triangle.  It isn't accurate in all cases, but it may be good enough
+ * for some uses.
+ */
 inline double
 ApollonianState::size() const
 {
