@@ -1,12 +1,11 @@
 #ifndef PERMUTATION_HPP
 #define PERMUTATION_HPP
 
-#include <cstdlib>
 #include <array>
 
 namespace apollonian {
 
-template <size_t N>
+template <unsigned int N>
 class Permutation {
 public:
     Permutation();
@@ -22,39 +21,40 @@ public:
     void operator () (const RandomAccessIteratorIn in_ptr,
                       RandomAccessIteratorOut out_ptr) const;
 
-    static Permutation<N> transposition(size_t i, size_t j);
+    static Permutation<N> transposition(unsigned int i,
+                                        unsigned int j);
 
     static const Permutation<N> identity;
 
 public:
-    std::array<size_t, N> v_;
+    std::array<unsigned int, N> v_;
 };
 
-template <size_t N>
+template <unsigned int N>
 Permutation<N>::Permutation() {
-    for (size_t k = 0; k < N; ++k) {
+    for (unsigned int k = 0; k < N; ++k) {
         v_[k] = k;
     }
 }
 
-template <size_t N>
+template <unsigned int N>
 template <typename... T>
 Permutation<N>::Permutation(T... args)
-    : v_{size_t(args)...}
+    : v_{(unsigned int)(args)...}
 {
 }
 
-template <size_t N>
+template <unsigned int N>
 Permutation<N>
 Permutation<N>::inverse() const {
     Permutation<N> p;
-    for (size_t k = 0; k < N; ++k) {
+    for (unsigned int k = 0; k < N; ++k) {
         p.v_[v_[k]] = k;
     }
     return p;
 }
 
-template <size_t N>
+template <unsigned int N>
 Permutation<N>
 Permutation<N>::operator * (const Permutation<N>& other) const
 {
@@ -63,16 +63,16 @@ Permutation<N>::operator * (const Permutation<N>& other) const
     return p;
 }
 
-template <size_t N>
+template <unsigned int N>
 Permutation<N>
-Permutation<N>::transposition(size_t i, size_t j) {
+Permutation<N>::transposition(unsigned int i, unsigned int j) {
     Permutation<N> p;
     p.v_[i] = j;
     p.v_[j] = i;
     return p;
 }
 
-template <size_t N>
+template <unsigned int N>
 template <typename RandomAccessIteratorIn,
           typename RandomAccessIteratorOut>
 void
@@ -80,12 +80,12 @@ Permutation<N>::operator () (
         const RandomAccessIteratorIn in_ptr,
         RandomAccessIteratorOut out_ptr) const
 {
-    for (size_t k = 0; k < N; ++k) {
+    for (unsigned int k = 0; k < N; ++k) {
         *(out_ptr + k) = *(in_ptr + v_[k]);
     }
 }
 
-template <size_t N>
+template <unsigned int N>
 const Permutation<N>
 Permutation<N>::identity;
 
