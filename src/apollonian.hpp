@@ -88,7 +88,9 @@ ApollonianState::size() const
     Complex w0 = m_.v_(0,0)/m_.v_(1,0);
     Complex w1 = m_.v_(0,1)/m_.v_(1,1);
     Complex w2 = (m_.v_(0,0) + m_.v_(0,1))/(m_.v_(1,0) + m_.v_(1,1));
-    return std::max({std::abs(w0 - w1), std::abs(w1 - w2), std::abs(w2 - w0)});
+    return std::max({std::abs(w0 - w1),
+                     std::abs(w1 - w2),
+                     std::abs(w2 - w0)});
 }
 
 inline
