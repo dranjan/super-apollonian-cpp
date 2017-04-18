@@ -133,7 +133,7 @@ generate_apollonian_triangle(const ApollonianState& initial_state,
  *
  * `visitor' is a callable that is to be called once on each disk in
  * the complement.  The order of the disks is unspecified.  The visitor
- * show be callable as
+ * should be callable as
  *
  *     void operator () (const ApollonianState& s);
  */
