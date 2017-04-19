@@ -45,19 +45,19 @@ const ApollonianState ApollonianState::inv{{ -1i, 1i,
  */
 
 /* real(z) >= 1 */
-const Circle ApollonianState::c0{ 0, -1,
-                                 -1,  2};
+const Circle ApollonianState::c0{0, -1,
+                                     2};
 
 /* |z - 0.5| <= 0.5 */
-const Circle ApollonianState::c1{ 2, -1,
-                                 -1,  0};
+const Circle ApollonianState::c1{2, -1,
+                                     0};
 
 /* real(z) <= 0 */
 const Circle ApollonianState::c2{0, 1,
-                                 1, 0};
+                                    0};
 
 /* |z - (0.5 + 0.5i)| <= 0.5 */
-const Circle ApollonianState::c3{ 2.0,    -1.0-2i,
-                                 -1.0+2i,  2.0   };
+const Circle ApollonianState::c3{2.0, -1.0-2i,
+                                       2.0};
 
 } // apollonian

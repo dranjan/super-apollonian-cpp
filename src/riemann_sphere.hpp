@@ -3,15 +3,9 @@
 
 #include <complex>
 
-#include <cmath>
-
-#include <Eigen/Core>
-
 namespace apollonian {
 
 using Complex = std::complex<double>;
-using Matrix = Eigen::Matrix2cd;
-using Vector = Eigen::Vector2cd;
 
 using namespace std::complex_literals;
 
@@ -22,46 +16,35 @@ public:
     PComplex(const Complex& numerator,
              const Complex& denominator);
     PComplex(const Complex& value);
-    PComplex(const Vector& v);
 
     operator Complex() const;
 
 public:
-    Vector v_;  /* {numerator, denominator} */
+    Complex v0_;
+    Complex v1_;
 };
 
 inline
 PComplex::PComplex(const Complex& numerator,
                    const Complex& denominator)
-    : v_{numerator, denominator}
+    : v0_{numerator}, v1_{denominator}
 {
 }
 
 inline
 PComplex::PComplex(const Complex& value) {
     if (std::isinf(value.real()) || std::isinf(value.imag())) {
-        v_(0) = 1;
-        v_(1) = 0;
+        v0_ = 1;
+        v1_ = 0;
     } else {
-        v_(0) = value;
-        v_(1) = 1;
+        v0_ = value;
+        v1_ = 1;
     }
 }
 
 inline
-PComplex::PComplex(const Vector& v)
-    : v_{v}
-{
-}
-
-inline
 PComplex::operator Complex() const {
-    return v_(0)/v_(1);
-}
-
-inline Complex
-det(const Matrix& v) {
-    return v(0,0)*v(1,1) - v(0,1)*v(1,0);
+    return v0_/v1_;
 }
 
 } // apollonian

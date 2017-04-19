@@ -85,9 +85,9 @@ ApollonianState::operator * (const ApollonianState& other) const {
 inline double
 ApollonianState::size() const
 {
-    Complex w0 = m_.v_(0,0)/m_.v_(1,0);
-    Complex w1 = m_.v_(0,1)/m_.v_(1,1);
-    Complex w2 = (m_.v_(0,0) + m_.v_(0,1))/(m_.v_(1,0) + m_.v_(1,1));
+    Complex w0 = m_.v00_/m_.v10_;
+    Complex w1 = m_.v01_/m_.v11_;
+    Complex w2 = (m_.v00_ + m_.v01_)/(m_.v10_ + m_.v11_);
     return std::max({std::abs(w0 - w1),
                      std::abs(w1 - w2),
                      std::abs(w2 - w0)});

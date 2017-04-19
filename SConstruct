@@ -17,7 +17,7 @@ if 'LIBRARY_PATH' in os.environ:
 if 'PKG_CONFIG_PATH' in os.environ:
     env.Append(ENV={'PKG_CONFIG_PATH':os.environ['PKG_CONFIG_PATH']})
 
-env.ParseConfig('pkg-config --cflags --libs eigen3 cairomm-1.0')
+env.ParseConfig('pkg-config --cflags --libs cairomm-1.0')
 
 env.Program('build/bin/main',
             source=['src/main.cpp',
