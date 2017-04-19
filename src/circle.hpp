@@ -38,6 +38,10 @@ public:
     double radius() const;
 
 public:
+    /* The full matrix of the quadratic form is
+     *         v00_   v01_
+     *    conj(v01_)  v11_.
+     */
     double  v00_;
     Complex v01_;
     double  v11_;
