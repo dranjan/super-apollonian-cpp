@@ -94,8 +94,7 @@ Circle::Circle(
 {
     MobiusTransformation m
         = MobiusTransformation::cross_ratio(z0, z1, z2).inverse();
-    Complex f = Complex(1.0)/(m.v00_*m.v11_ - m.v01_*m.v10_);
-    *this = m(Circle{0, -f, 0});
+    *this = m(Circle{0, -1.0, 0});
 }
 
 inline Complex

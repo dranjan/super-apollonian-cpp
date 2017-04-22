@@ -61,7 +61,6 @@ MobiusTransformation::MobiusTransformation(
     MobiusTransformation p = cross_ratio(z0, z1, z2);
     MobiusTransformation q = cross_ratio(w0, w1, w2);
     *this = q.inverse()*p;
-    normalize();
 }
 
 inline MobiusTransformation
@@ -101,8 +100,16 @@ MobiusTransformation::cross_ratio(
     const Complex& b1(z1.v1_);
     const Complex& b2(z2.v1_);
 
-    return {b1*(a0*b2 - a2*b0), a1*(a2*b0 - a0*b2),
-            b0*(a1*b2 - a2*b1), a0*(a2*b1 - a1*b2)};
+    Complex det02 = a0*b2 - a2*b0;
+    Complex det21 = a2*b1 - a1*b2;
+    Complex det10 = a1*b0 - a0*b1;
+
+    Complex f = 1.0/std::sqrt(det02*det21*det10);
+    Complex num = det02*f;
+    Complex den = det21*f;
+
+    return { b1*num, -a1*num,
+            -b0*den,  a0*den};
 }
 
 template <>

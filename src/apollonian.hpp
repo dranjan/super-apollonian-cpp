@@ -149,7 +149,6 @@ generate_apollonian_gasket(
 {
     MobiusTransformation m
         = MobiusTransformation::cross_ratio(z0, z1, z2).inverse();
-    m.normalize();
     ApollonianState state(m, Permutation<4>::identity);
 
     visitor(state*ApollonianState::m0.inverse());
