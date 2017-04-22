@@ -101,7 +101,7 @@ ApollonianState::operator Circle () const {
 template <typename Visitor>
 void
 generate_apollonian_triangle(const ApollonianState& initial_state,
-                             double threshold, Visitor& visitor)
+                             Visitor& visitor)
 {
     /* This could equally well be done with explicit recursion, but we
      * use an explicit stack as a more lightweight alternative.
@@ -112,8 +112,7 @@ generate_apollonian_triangle(const ApollonianState& initial_state,
     while (stack.size()) {
         ApollonianState state = stack.back();
         stack.pop_back();
-        visitor(state);
-        if (state.size() >= threshold) {
+        if (visitor(state)) {
             stack.push_back(state*ApollonianState::m0);
             stack.push_back(state*ApollonianState::m1);
             stack.push_back(state*ApollonianState::m2);
@@ -137,13 +136,16 @@ generate_apollonian_triangle(const ApollonianState& initial_state,
  * the complement.  The order of the disks is unspecified.  The visitor
  * should be callable as
  *
- *     void operator () (const ApollonianState& s);
+ *     bool operator () (const ApollonianState& s);
+ *
+ * The return value is whether we are interested in further iterations
+ * of this state.
  */
 template <typename Visitor>
 void
 generate_apollonian_gasket(
         const PComplex& z0, const PComplex& z1, const PComplex& z2,
-        double threshold, Visitor& visitor)
+        Visitor& visitor)
 {
     MobiusTransformation m
         = MobiusTransformation::cross_ratio(z0, z1, z2).inverse();
@@ -154,9 +156,8 @@ generate_apollonian_gasket(
     visitor(state*ApollonianState::m1.inverse());
     visitor(state*ApollonianState::m2.inverse());
 
-    generate_apollonian_triangle(state, threshold, visitor);
-    generate_apollonian_triangle(state*ApollonianState::inv,
-                                 threshold, visitor);
+    generate_apollonian_triangle(state, visitor);
+    generate_apollonian_triangle(state*ApollonianState::inv, visitor);
 }
 
 } // apollonian

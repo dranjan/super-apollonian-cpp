@@ -13,25 +13,27 @@ class RenderingVisitor {
 public:
     RenderingVisitor(CairoRenderer& renderer,
                      const RGBColor (*colors_)[4],
-                     double r0);
+                     double r0, double threshold);
 
-    void operator () (const ApollonianState& s);
+    bool operator () (const ApollonianState& s);
     void report() const;
 
 private:
     CairoRenderer& renderer_;
     const RGBColor (*colors_)[4];
     double r0_;
+    double threshold_;
 };
 
 RenderingVisitor::RenderingVisitor(CairoRenderer& renderer,
                                    const RGBColor (*colors)[4],
-                                   double r0)
-    : renderer_{renderer}, colors_{colors}, r0_{r0}
+                                   double r0, double threshold)
+    : renderer_{renderer}, colors_{colors}, r0_{r0},
+      threshold_{threshold}
 {
 }
 
-void
+bool
 RenderingVisitor::operator () (const ApollonianState& s) {
     Circle c = s;
     double r1 = c.radius();
@@ -40,6 +42,7 @@ RenderingVisitor::operator () (const ApollonianState& s) {
     RGBColor color = (*colors_)[s.p_.v_[3]].blend(RGBColor::white,
                                                   1 - f);
     renderer_.render_circle(c, color);
+    return s.size() >= threshold_;
 };
 
 int main(int argc, char* argv[]) {
@@ -73,8 +76,8 @@ int main(int argc, char* argv[]) {
         = MobiusTransformation::cross_ratio(a, b, c).inverse();
     double r0 = m(ApollonianState::c0).radius();
 
-    RenderingVisitor visitor{renderer, &colors, r0};
-    generate_apollonian_gasket(a, b, c, 1.0/res, visitor);
+    RenderingVisitor visitor{renderer, &colors, r0, 1.0/res};
+    generate_apollonian_gasket(a, b, c, visitor);
 
     renderer.save(filename);
 
