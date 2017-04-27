@@ -39,8 +39,8 @@ RenderingVisitor::operator () (const ApollonianState& s) {
     double r1 = c.radius();
     if (r1 < 0 || r1 > r0_) r1 = r0_;
     double f = 1.0/(1.0 - 0.5*std::log(r1/r0_));
-    RGBColor color = (*colors_)[s.p_.v_[3]].blend(RGBColor::white,
-                                                  1 - f);
+    RGBColor color = (*colors_)[s.t_.g1_.g_.v_[3]].blend(RGBColor::white,
+                                                         1 - f);
     renderer_.render_circle(c, color);
     return s.size() >= threshold_;
 };

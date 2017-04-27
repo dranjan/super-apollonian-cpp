@@ -6,8 +6,13 @@
 #include "circle.hpp"
 #include "mobius.hpp"
 #include "permutation.hpp"
+#include "groups.hpp"
 
 namespace apollonian {
+
+using ApollonianTransformation
+    = ProductGroup<MobiusTransformation,
+                   OppositeGroup<Permutation<4>>>;
 
 /* An "Apollonian state" describes a configuration of four mutually
  * tangent circles (or disks with disjoint interiors) that may be
@@ -26,16 +31,12 @@ namespace apollonian {
 class ApollonianState {
 public:
     ApollonianState() = default;
+    ApollonianState(const ApollonianTransformation& t);
     ApollonianState(const MobiusTransformation& m,
                     const Permutation<4>& p);
 
-    ApollonianState inverse() const;
-    ApollonianState operator * (const ApollonianState& other) const;
-
     double size() const;
     operator Circle () const;
-
-    static const ApollonianState identity;
 
     /* These transformations and disks describe the canonical
      * Apollonian gasket.  An arbitrary Apollonian gasket can be
@@ -46,10 +47,10 @@ public:
      *
      * See the .cpp file for more details.
      */
-    static const ApollonianState m0;
-    static const ApollonianState m1;
-    static const ApollonianState m2;
-    static const ApollonianState inv;
+    static const ApollonianTransformation m0;
+    static const ApollonianTransformation m1;
+    static const ApollonianTransformation m2;
+    static const ApollonianTransformation inv;
 
     static const Circle c0;
     static const Circle c1;
@@ -57,25 +58,20 @@ public:
     static const Circle c3;
 
 public:
-    MobiusTransformation m_;
-    Permutation<4> p_;
+    ApollonianTransformation t_;
 };
+
+inline
+ApollonianState::ApollonianState(const ApollonianTransformation& t)
+    : t_{t}
+{
+}
 
 inline
 ApollonianState::ApollonianState(const MobiusTransformation& m,
                                  const Permutation<4>& p)
-    : m_{m}, p_{p}
+    : t_{m, p}
 {
-}
-
-inline ApollonianState
-ApollonianState::inverse() const {
-    return ApollonianState(m_.inverse(), p_.inverse());
-}
-
-inline ApollonianState
-ApollonianState::operator * (const ApollonianState& other) const {
-    return ApollonianState(m_*other.m_, other.p_*p_);
 }
 
 /* This is an approximation to the diamater of the Apollonian
@@ -85,9 +81,11 @@ ApollonianState::operator * (const ApollonianState& other) const {
 inline double
 ApollonianState::size() const
 {
-    Complex w0 = m_.v00_/m_.v10_;
-    Complex w1 = m_.v01_/m_.v11_;
-    Complex w2 = (m_.v00_ + m_.v01_)/(m_.v10_ + m_.v11_);
+    const auto& m = t_.g0_;
+
+    Complex w0 = m.v00_/m.v10_;
+    Complex w1 = m.v01_/m.v11_;
+    Complex w2 = (m.v00_ + m.v01_)/(m.v10_ + m.v11_);
     return std::max({std::abs(w0 - w1),
                      std::abs(w1 - w2),
                      std::abs(w2 - w0)});
@@ -95,7 +93,7 @@ ApollonianState::size() const
 
 inline
 ApollonianState::operator Circle () const {
-    return m_(c3);
+    return t_.g0_(c3);
 }
 
 template <typename Visitor>
@@ -107,15 +105,15 @@ generate_apollonian_triangle(const ApollonianState& initial_state,
      * use an explicit stack as a more lightweight alternative.
      */
     std::vector<ApollonianState> stack;
-    stack.push_back(initial_state);
+    stack.emplace_back(initial_state);
 
     while (stack.size()) {
         ApollonianState state = stack.back();
         stack.pop_back();
         if (visitor(state)) {
-            stack.push_back(state*ApollonianState::m0);
-            stack.push_back(state*ApollonianState::m1);
-            stack.push_back(state*ApollonianState::m2);
+            stack.emplace_back(state.t_*ApollonianState::m0);
+            stack.emplace_back(state.t_*ApollonianState::m1);
+            stack.emplace_back(state.t_*ApollonianState::m2);
         }
     }
 }
@@ -151,12 +149,12 @@ generate_apollonian_gasket(
         = MobiusTransformation::cross_ratio(z0, z1, z2).inverse();
     ApollonianState state(m, Permutation<4>::identity);
 
-    visitor(state*ApollonianState::m0.inverse());
-    visitor(state*ApollonianState::m1.inverse());
-    visitor(state*ApollonianState::m2.inverse());
+    visitor(state.t_*ApollonianState::m0.inverse());
+    visitor(state.t_*ApollonianState::m1.inverse());
+    visitor(state.t_*ApollonianState::m2.inverse());
 
     generate_apollonian_triangle(state, visitor);
-    generate_apollonian_triangle(state*ApollonianState::inv, visitor);
+    generate_apollonian_triangle(state.t_*ApollonianState::inv, visitor);
 }
 
 } // apollonian
