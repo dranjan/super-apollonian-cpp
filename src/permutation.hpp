@@ -9,6 +9,7 @@ template <unsigned int N>
 class Permutation {
 public:
     Permutation();
+    Permutation(const Permutation&) = default;
 
     template <typename... T>
     Permutation(T... args);
