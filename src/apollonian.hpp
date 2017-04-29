@@ -144,6 +144,33 @@ ApollonianState<Data>::operator Circle () const {
     return t_.g0_(canonical::c);
 }
 
+/* Main entry point to this module.
+ *
+ * z0, z1, and z2 are the three points on the main circle tangent to
+ * each of the respective main sub-circles.
+ *
+ * data0 and data1 are the initial data attached respectively to the
+ * two sides of the main circle.  If z0, z1, and z2 are ordered
+ * counterclockwise around the circle, then data0 is interior and data1
+ * is exterior, being swapped if the points are ordered clockwise.
+ *
+ * The Visitor type should have the methods
+ *
+ *     bool Visitor::visit_node(const ApollonianState<Data>&);
+ *     Data Visitor::transform_data(const Data&,
+ *                                  const NodeType&,
+ *                                  const ApollonianTransformation&) const;
+ *
+ * The return value of visit_node indicates whether we are interested
+ * in further iterations of this node.  visit_node will be called once
+ * for each generated node (triangle and circle).  The order of nodes
+ * is unspecified, but a given node will always be visited before its
+ * children.
+ *
+ * transform_data should return the data to be assigned to a child node
+ * given the parent node's data, the child node's type, and the
+ * transformation relating the parent and child nodes.
+ */
 template <typename Data, typename Visitor>
 void
 generate_apollonian_gasket(
@@ -171,15 +198,15 @@ generate_apollonian_gasket(
     while (stack.size()) {
         State state = stack.back();
         stack.pop_back();
-        if (visitor(state)) {
+        if (visitor.visit_node(state)) {
             state.iterate(
                 [&stack, &visitor, &state] (
                         const NodeType& type,
                         const ApollonianTransformation& t)
                 {
                     stack.emplace_back(type, t,
-                                       visitor.transform(state.data_,
-                                                         type, t));
+                                       visitor.transform_data(state.data_,
+                                                              type, t));
                 }
             );
         }

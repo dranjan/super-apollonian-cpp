@@ -12,19 +12,24 @@ using namespace apollonian;
 
 class RenderingVisitor {
 public:
+    using State = ApollonianState<int>;
+
+public:
     RenderingVisitor(CairoRenderer& renderer,
                      const RGBColor (*colors_)[4],
                      double r0, double threshold);
 
-    bool operator () (const ApollonianState<int>& s);
-    bool visit_node_a(const ApollonianState<int>& s);
-    bool visit_node_b(const ApollonianState<int>& s);
-
-    RGBColor get_color(const Circle& c, unsigned int index) const;
+    bool visit_node(const State& s);
 
     void report() const;
-    int transform(int data, NodeType type,
-                  const ApollonianTransformation& t) const;
+    int transform_data(int data, NodeType type,
+                       const ApollonianTransformation& t) const;
+
+protected:
+    bool visit_node_a(const State& s);
+    bool visit_node_b(const State& s);
+
+    RGBColor get_color(const Circle& c, unsigned int index) const;
 
 private:
     CairoRenderer& renderer_;
@@ -43,7 +48,7 @@ RenderingVisitor::RenderingVisitor(CairoRenderer& renderer,
 }
 
 bool
-RenderingVisitor::operator () (const ApollonianState<int>& s) {
+RenderingVisitor::visit_node(const State& s) {
     switch (s.type_) {
     case NodeType::A:
         return visit_node_a(s);
@@ -57,12 +62,12 @@ RenderingVisitor::operator () (const ApollonianState<int>& s) {
 };
 
 bool
-RenderingVisitor::visit_node_a(const ApollonianState<int>& s) {
+RenderingVisitor::visit_node_a(const State& s) {
     return s.size() >= threshold_;
 }
 
 bool
-RenderingVisitor::visit_node_b(const ApollonianState<int>& s) {
+RenderingVisitor::visit_node_b(const State& s) {
     Circle c = s;
     renderer_.render_circle(c, get_color(c, s.t_.g1_.g_.v_[3]));
     ++count_;
@@ -81,7 +86,8 @@ RenderingVisitor::get_color(const Circle& c, unsigned int index) const {
     return (*colors_)[index].blend(RGBColor::white, 1 - f);
 }
 
-int RenderingVisitor::transform(
+int
+RenderingVisitor::transform_data(
         int data, NodeType type,
         const ApollonianTransformation& t) const
 {
