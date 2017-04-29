@@ -83,8 +83,6 @@ public:
     operator Circle() const;
 
 public:
-
-public:
     NodeType type_;
     ApollonianTransformation t_;
     Data data_;
