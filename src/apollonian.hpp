@@ -197,10 +197,10 @@ generate_apollonian_gasket(
             unsigned int index = static_cast<unsigned int>(state.type_);
             for (const auto& edge : canonical::graph.edges_[index]) {
                 NodeType type = static_cast<NodeType>(edge.type_index);
-                ApollonianTransformation t = state.t_*edge.transform;
-                stack.emplace_back(type, t,
-                                   visitor.transform_data(state.data_,
-                                                          type, t));
+                stack.emplace_back(type, state.t_*edge.transform,
+                                   visitor.transform_data(
+                                           state.data_,
+                                           type, edge.transform));
             }
         }
     }
