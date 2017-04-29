@@ -37,6 +37,8 @@ public:
     Complex center() const;
     double radius() const;
 
+    Circle reverse() const;
+
 public:
     /* The full matrix of the quadratic form is
      *         v00_   v01_
@@ -105,6 +107,11 @@ Circle::center() const {
 inline double
 Circle::radius() const {
     return std::sqrt(std::norm(v01_) - v00_*v11_)/v00_;
+}
+
+inline Circle
+Circle::reverse() const {
+    return {-v00_, -v01_, -v11_};
 }
 
 } // appollonian
