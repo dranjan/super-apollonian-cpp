@@ -157,7 +157,7 @@ generate_apollonian_gasket(
     using canonical::a1;
     using canonical::a2;
 
-    /* This could equally well be done with explicit recursion, but we
+    /* This could equally well be done with true recursion, but we
      * use an explicit stack as a more lightweight alternative.
      */
     std::vector<State> stack;
