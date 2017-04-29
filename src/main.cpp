@@ -17,6 +17,9 @@ public:
                      double r0, double threshold);
 
     bool operator () (const ApollonianState<int>& s);
+    bool visit_node_a(const ApollonianState<int>& s);
+    bool visit_node_b(const ApollonianState<int>& s);
+
     void report() const;
     int transform(int data, NodeType type,
                   const ApollonianTransformation& t) const;
@@ -39,30 +42,35 @@ RenderingVisitor::RenderingVisitor(CairoRenderer& renderer,
 
 bool
 RenderingVisitor::operator () (const ApollonianState<int>& s) {
-    Circle c;
-    double r1;
-    double f;
-    RGBColor color;
-
     switch (s.type_) {
     case NodeType::A:
-        return s.size() >= threshold_;
+        return visit_node_a(s);
     case NodeType::B:
-        c = s;
-        r1 = c.radius();
-        if (r1 < 0 || r1 > r0_) r1 = r0_;
-        f = 1.0/(1.0 - 0.5*std::log(r1/r0_));
-        color = (*colors_)[s.t_.g1_.g_.v_[3]].blend(RGBColor::white,
-                                                    1 - f);
-        renderer_.render_circle(c, color);
-        ++count_;
-        return s.data_ < 1 && s.size() >= threshold_;
+        return visit_node_b(s);
     default:
         assert(false);
     }
 
     return false;
 };
+
+bool
+RenderingVisitor::visit_node_a(const ApollonianState<int>& s) {
+    return s.size() >= threshold_;
+}
+
+bool
+RenderingVisitor::visit_node_b(const ApollonianState<int>& s) {
+    Circle c = s;
+    double r1 = c.radius();
+    if (r1 < 0 || r1 > r0_) r1 = r0_;
+    double f = 1.0/(1.0 - 0.5*std::log(r1/r0_));
+    RGBColor color = (*colors_)[s.t_.g1_.g_.v_[3]].blend(RGBColor::white,
+                                                         1 - f);
+    renderer_.render_circle(c, color);
+    ++count_;
+    return s.data_ < 1 && s.size() >= threshold_;
+}
 
 int RenderingVisitor::transform(
         int data, NodeType type,
