@@ -24,13 +24,14 @@ private:
     const RGBColor (*colors_)[4];
     double r0_;
     double threshold_;
+    int count_;
 };
 
 RenderingVisitor::RenderingVisitor(CairoRenderer& renderer,
                                    const RGBColor (*colors)[4],
                                    double r0, double threshold)
     : renderer_{renderer}, colors_{colors}, r0_{r0},
-      threshold_{threshold}
+      threshold_{threshold}, count_{0}
 {
 }
 
@@ -52,6 +53,7 @@ RenderingVisitor::operator () (const ApollonianState& s) {
         color = (*colors_)[s.t_.g1_.g_.v_[3]].blend(RGBColor::white,
                                                     1 - f);
         renderer_.render_circle(c, color);
+        ++count_;
         return false;
     default:
         assert(false);
@@ -59,6 +61,11 @@ RenderingVisitor::operator () (const ApollonianState& s) {
 
     return false;
 };
+
+void
+RenderingVisitor::report() const {
+    std::cout << "Circles rendered: " << count_ << std::endl;
+}
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
@@ -94,6 +101,7 @@ int main(int argc, char* argv[]) {
     RenderingVisitor visitor{renderer, &colors, r0, 1.0/res};
     generate_apollonian_gasket(a, b, c, visitor);
 
+    visitor.report();
     renderer.save(filename);
 
     return 0;
