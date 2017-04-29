@@ -78,8 +78,16 @@ public:
     template <typename Callback>
     void iterate(Callback&& callback) const;
 
+    /* For a type-A node (triangle), the size is a rough approximation
+     * to the diameter.  For a type-B node (circle), the size is the
+     * diameter of the circle.
+     */
     double size() const;
 
+    /* For a type-A node (triangle), this is the circumcircle of the
+     * three vertices.  For a type-B node (circle), this is the circle
+     * itself.
+     */
     operator Circle() const;
 
 public:
