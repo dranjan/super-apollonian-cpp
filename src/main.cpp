@@ -16,8 +16,10 @@ public:
                      const RGBColor (*colors_)[4],
                      double r0, double threshold);
 
-    bool operator () (const ApollonianState& s);
+    bool operator () (const ApollonianState<int>& s);
     void report() const;
+    int transform(int data, NodeType type,
+                  const ApollonianTransformation& t) const;
 
 private:
     CairoRenderer& renderer_;
@@ -36,16 +38,16 @@ RenderingVisitor::RenderingVisitor(CairoRenderer& renderer,
 }
 
 bool
-RenderingVisitor::operator () (const ApollonianState& s) {
+RenderingVisitor::operator () (const ApollonianState<int>& s) {
     Circle c;
     double r1;
     double f;
     RGBColor color;
 
     switch (s.type_) {
-    case ApollonianState::NodeType::A:
+    case NodeType::A:
         return s.size() >= threshold_;
-    case ApollonianState::NodeType::B:
+    case NodeType::B:
         c = s;
         r1 = c.radius();
         if (r1 < 0 || r1 > r0_) r1 = r0_;
@@ -54,13 +56,21 @@ RenderingVisitor::operator () (const ApollonianState& s) {
                                                     1 - f);
         renderer_.render_circle(c, color);
         ++count_;
-        return false;
+        return s.data_ < 1 && s.size() >= threshold_;
     default:
         assert(false);
     }
 
     return false;
 };
+
+int RenderingVisitor::transform(
+        int data, NodeType type,
+        const ApollonianTransformation& t) const
+{
+    (void)t;
+    return data + (type == NodeType::B);
+}
 
 void
 RenderingVisitor::report() const {
@@ -99,7 +109,7 @@ int main(int argc, char* argv[]) {
     double r0 = m(Circle{0, -1, 2}).radius();
 
     RenderingVisitor visitor{renderer, &colors, r0, 1.0/res};
-    generate_apollonian_gasket(a, b, c, visitor);
+    generate_apollonian_gasket(a, b, c, 0, 1, visitor);
 
     visitor.report();
     renderer.save(filename);
