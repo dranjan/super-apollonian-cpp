@@ -75,9 +75,6 @@ public:
                     const Data& data);
     ApollonianState(const ApollonianState&) = default;
 
-    template <typename Callback>
-    void iterate(Callback&& callback) const;
-
     /* For a type-A node (triangle), the size is a rough approximation
      * to the diameter.  For a type-B node (circle), the size is the
      * diameter of the circle.
@@ -103,16 +100,6 @@ ApollonianState<Data>::ApollonianState(NodeType type,
                                        const Data& data)
     : type_{type}, t_{t}, data_{data}
 {
-}
-
-template <typename Data>
-template <typename Callback>
-void
-ApollonianState<Data>::iterate(Callback&& callback) const {
-    unsigned int index = static_cast<unsigned int>(type_);
-    for (const auto& e : canonical::graph.edges_[index]) {
-        callback(static_cast<NodeType>(e.type_index), t_*e.transform);
-    }
 }
 
 inline double
@@ -207,16 +194,14 @@ generate_apollonian_gasket(
         State state = stack.back();
         stack.pop_back();
         if (visitor.visit_node(state)) {
-            state.iterate(
-                [&stack, &visitor, &state] (
-                        const NodeType& type,
-                        const ApollonianTransformation& t)
-                {
-                    stack.emplace_back(type, t,
-                                       visitor.transform_data(state.data_,
-                                                              type, t));
-                }
-            );
+            unsigned int index = static_cast<unsigned int>(state.type_);
+            for (const auto& edge : canonical::graph.edges_[index]) {
+                NodeType type = static_cast<NodeType>(edge.type_index);
+                ApollonianTransformation t = state.t_*edge.transform;
+                stack.emplace_back(type, t,
+                                   visitor.transform_data(state.data_,
+                                                          type, t));
+            }
         }
     }
 }
