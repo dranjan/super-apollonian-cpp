@@ -1,4 +1,5 @@
 #include <cmath>
+#include <cassert>
 #include <iostream>
 #include <string>
 
@@ -35,14 +36,28 @@ RenderingVisitor::RenderingVisitor(CairoRenderer& renderer,
 
 bool
 RenderingVisitor::operator () (const ApollonianState& s) {
-    Circle c = s;
-    double r1 = c.radius();
-    if (r1 < 0 || r1 > r0_) r1 = r0_;
-    double f = 1.0/(1.0 - 0.5*std::log(r1/r0_));
-    RGBColor color = (*colors_)[s.t_.g1_.g_.v_[3]].blend(RGBColor::white,
-                                                         1 - f);
-    renderer_.render_circle(c, color);
-    return s.size() >= threshold_;
+    Circle c;
+    double r1;
+    double f;
+    RGBColor color;
+
+    switch (s.type_) {
+    case ApollonianState::NodeType::A:
+        return s.size() >= threshold_;
+    case ApollonianState::NodeType::B:
+        c = s;
+        r1 = c.radius();
+        if (r1 < 0 || r1 > r0_) r1 = r0_;
+        f = 1.0/(1.0 - 0.5*std::log(r1/r0_));
+        color = (*colors_)[s.t_.g1_.g_.v_[3]].blend(RGBColor::white,
+                                                    1 - f);
+        renderer_.render_circle(c, color);
+        return false;
+    default:
+        assert(false);
+    }
+
+    return false;
 };
 
 int main(int argc, char* argv[]) {
@@ -74,7 +89,7 @@ int main(int argc, char* argv[]) {
 
     MobiusTransformation m
         = MobiusTransformation::cross_ratio(a, b, c).inverse();
-    double r0 = m(ApollonianState::c0).radius();
+    double r0 = m(Circle{0, -1, 2}).radius();
 
     RenderingVisitor visitor{renderer, &colors, r0, 1.0/res};
     generate_apollonian_gasket(a, b, c, visitor);
