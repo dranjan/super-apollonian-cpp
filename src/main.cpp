@@ -20,6 +20,8 @@ public:
     bool visit_node_a(const ApollonianState<int>& s);
     bool visit_node_b(const ApollonianState<int>& s);
 
+    RGBColor get_color(const Circle& c, unsigned int index) const;
+
     void report() const;
     int transform(int data, NodeType type,
                   const ApollonianTransformation& t) const;
@@ -62,14 +64,21 @@ RenderingVisitor::visit_node_a(const ApollonianState<int>& s) {
 bool
 RenderingVisitor::visit_node_b(const ApollonianState<int>& s) {
     Circle c = s;
-    double r1 = c.radius();
-    if (r1 < 0 || r1 > r0_) r1 = r0_;
-    double f = 1.0/(1.0 - 0.5*std::log(r1/r0_));
-    RGBColor color = (*colors_)[s.t_.g1_.g_.v_[3]].blend(RGBColor::white,
-                                                         1 - f);
-    renderer_.render_circle(c, color);
+    renderer_.render_circle(c, get_color(c, s.t_.g1_.g_.v_[3]));
     ++count_;
+
     return s.data_ < 1 && s.size() >= threshold_;
+}
+
+RGBColor
+RenderingVisitor::get_color(const Circle& c, unsigned int index) const {
+    double r1 = c.radius();
+    if (r1 < 0 || r1 > r0_) {
+        r1 = r0_;
+    }
+
+    double f = 1.0/(1.0 - 0.5*std::log(r1/r0_));
+    return (*colors_)[index].blend(RGBColor::white, 1 - f);
 }
 
 int RenderingVisitor::transform(
