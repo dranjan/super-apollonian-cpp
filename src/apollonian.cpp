@@ -2,61 +2,56 @@
 
 namespace apollonian {
 
-namespace {
-
-/* These are the six tangency points involving the circles in the
- * "canonical" Apollonian gasket.
- */
-
-/* These are the three tangency points not involving the fourth circle.
- */
-PComplex a0{1.0, 0.0};
-PComplex a1{0.0, 1.0};
-PComplex a2{1.0, 1.0};
-
-/* These are the three tangency points involving the fourth circle. */
-PComplex b0{0.5+0.5i};
-PComplex b1{1.0+1.0i};
-PComplex b2{    1.0i};
-
-}
-
 namespace canonical {
 
-/* These are the transformations that generate the canonical "super"
- * Apollonian gasket (as a monoid).
+const PComplex a0{1.0, 0.0};
+const PComplex a1{0.0, 1.0};
+const PComplex a2{1.0, 1.0};
+
+const PComplex b0{0.5+0.5i};
+const PComplex b1{1.0+1.0i};
+const PComplex b2{    1.0i};
+
+/* The transformations that generate the fancy gasket. */
+
+/* These relate a node to a subnode of the same type (A -> A or B -> B).
+ * These are all parabolic transformations.
  */
-const ApollonianTransformation
-m0{ {a0, a1, a2, a0, b2, b1},
-    {3, 1, 2, 0}};
+const ApollonianTransformation m0{{a0, a1, a2, a0, b2, b1}, {3, 1, 2, 0}};
+const ApollonianTransformation m1{{a0, a1, a2, b2, a1, b0}, {0, 3, 2, 1}};
+const ApollonianTransformation m2{{a0, a1, a2, b1, b0, a2}, {0, 1, 3, 2}};
 
-const ApollonianTransformation
-m1{ {a0, a1, a2, b2, a1, b0},
-    {0, 3, 2, 1}};
+/* These relate a node to a subnode of the other type (A -> B or B ->
+ * A).  The first three are elliptical (having order 4) while the last is
+ * hyperbolic.
+ */
+const ApollonianTransformation n0{{a0, a1, a2, b0, a1, a2}, {3, 2, 1, 0}};
+const ApollonianTransformation n1{{a0, a1, a2, a0, b1, a2}, {2, 3, 0, 1}};
+const ApollonianTransformation n2{{a0, a1, a2, a0, a1, b2}, {1, 0, 3, 2}};
+const ApollonianTransformation p{ {a0, a1, a2, b0, b1, b2}, {0, 1, 2, 3}};
 
-const ApollonianTransformation
-m2{ {a0, a1, a2, b1, b0, a2},
-    {0, 1, 3, 2}};
+using EdgeType = GraphEdge<ApollonianTransformation>;
 
-const ApollonianTransformation
-n0{ {a0, a1, a2, b0, a1, a2},
-    {3, 2, 1, 0}};
-
-const ApollonianTransformation
-n1{ {a0, a1, a2, a0, b1, a2},
-    {2, 3, 0, 1}};
-
-const ApollonianTransformation
-n2{ {a0, a1, a2, a0, a1, b2},
-    {1, 0, 3, 2}};
-
-const ApollonianTransformation
-p{  {a0, a1, a2, b0, b1, b2},
-    {0, 1, 2, 3}};
-
-const ApollonianTransformation
-inv{{a0, a1, a2, a0, a2, a1},
-    {0, 2, 1, 3}};
+const TransformationGraph<2, ApollonianTransformation>
+graph{
+    /* Edges for node type A (triangle) */
+    std::vector<EdgeType>{
+        EdgeType{0, m0},
+        EdgeType{0, m1},
+        EdgeType{0, m2},
+        EdgeType{1, p},
+    },
+    /* Edges for node type B (circle) */
+    std::vector<GraphEdge<ApollonianTransformation>>{
+        EdgeType{1, m0},
+        EdgeType{1, m1},
+        EdgeType{1, m2},
+        EdgeType{0, n0},
+        EdgeType{0, n1},
+        EdgeType{0, n2},
+        EdgeType{0, p},
+    },
+};
 
 /* Upper half plane. */
 const Circle

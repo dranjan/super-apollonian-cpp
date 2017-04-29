@@ -10,6 +10,7 @@
 #include "mobius.hpp"
 #include "permutation.hpp"
 #include "groups.hpp"
+#include "transformation_graph.hpp"
 
 namespace apollonian {
 
@@ -18,19 +19,43 @@ using ApollonianTransformation
                    OppositeGroup<Permutation<4>>>;
 
 namespace canonical {
-    extern const ApollonianTransformation m0;
-    extern const ApollonianTransformation m1;
-    extern const ApollonianTransformation m2;
 
-    extern const ApollonianTransformation n0;
-    extern const ApollonianTransformation n1;
-    extern const ApollonianTransformation n2;
+/* These are the six tangency points involving the four circles in the
+ * "canonical" Apollonian gasket.
+ */
 
-    extern const ApollonianTransformation p;
+/* The three tangency points not involving the fourth circle. */
+extern const PComplex a0;
+extern const PComplex a1;
+extern const PComplex a2;
 
-    extern const ApollonianTransformation inv;
+/* The three tangency points involving the fourth circle. */
+extern const PComplex b0;
+extern const PComplex b1;
+extern const PComplex b2;
 
-    extern const Circle c;
+/* These relate a node to a subnode of the same type (A -> A or B -> B).
+ */
+extern const ApollonianTransformation m0;
+extern const ApollonianTransformation m1;
+extern const ApollonianTransformation m2;
+
+/* These relate a node to a subnode of the other type (A -> B or B ->
+ * A).
+ */
+extern const ApollonianTransformation n0;
+extern const ApollonianTransformation n1;
+extern const ApollonianTransformation n2;
+extern const ApollonianTransformation p;
+
+/* The transformation graph that generates the gasket itself.  This
+ * gasket is a fancier version in which the circles are also filled
+ * recursively.
+ */
+extern const TransformationGraph<2, ApollonianTransformation> graph;
+
+/* Circle through a0, a1, and a2. */
+extern const Circle c;
 
 } // canonical
 
@@ -41,7 +66,7 @@ enum class NodeType {
 
 template <typename Data>
 class ApollonianState {
-public:
+    using Transform = ApollonianTransformation;
 
 public:
     ApollonianState() = default;
@@ -56,6 +81,8 @@ public:
     double size() const;
 
     operator Circle() const;
+
+public:
 
 public:
     NodeType type_;
@@ -76,26 +103,9 @@ template <typename Data>
 template <typename Callback>
 void
 ApollonianState<Data>::iterate(Callback&& callback) const {
-    using namespace canonical;
-
-    switch (type_) {
-    case NodeType::A:
-        callback(NodeType::A, t_*m0);
-        callback(NodeType::A, t_*m1);
-        callback(NodeType::A, t_*m2);
-        callback(NodeType::B, t_*p);
-        break;
-    case NodeType::B:
-        callback(NodeType::B, t_*m0);
-        callback(NodeType::B, t_*m1);
-        callback(NodeType::B, t_*m2);
-        callback(NodeType::A, t_*n0);
-        callback(NodeType::A, t_*n1);
-        callback(NodeType::A, t_*n2);
-        callback(NodeType::A, t_*p);
-        break;
-    default:
-        assert(false);
+    unsigned int index = static_cast<unsigned int>(type_);
+    for (const auto& e : canonical::graph.edges_[index]) {
+        callback(static_cast<NodeType>(e.type_index), t_*e.transform);
     }
 }
 
@@ -141,7 +151,9 @@ generate_apollonian_gasket(
 {
     using State = ApollonianState<Data>;
     using Transform = ApollonianTransformation;
-    using namespace canonical;
+    using canonical::a0;
+    using canonical::a1;
+    using canonical::a2;
 
     /* This could equally well be done with explicit recursion, but we
      * use an explicit stack as a more lightweight alternative.
@@ -152,8 +164,13 @@ generate_apollonian_gasket(
         = MobiusTransformation::cross_ratio(z0, z1, z2).inverse();
     Transform t{m, Permutation<4>::identity};
 
-    stack.emplace_back(NodeType::B, t*p.inverse(), data0);
-    stack.emplace_back(NodeType::B, t*p.inverse()*inv, data1);
+    /* Involution that swaps the interior and exterior of the main
+     * circle.
+     */
+    Transform inv{{a0, a1, a2, a0, a2, a1}, {0, 2, 1, 3}};
+
+    stack.emplace_back(NodeType::B, t*canonical::p.inverse(), data0);
+    stack.emplace_back(NodeType::B, t*canonical::p.inverse()*inv, data1);
 
     while (stack.size()) {
         State state = stack.back();
