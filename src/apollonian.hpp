@@ -164,17 +164,11 @@ generate_apollonian_gasket(
      */
     std::vector<State> stack;
 
-    MobiusTransformation m
-        = MobiusTransformation::cross_ratio(z0, z1, z2).inverse();
-    Transform t{m, Permutation<4>::identity};
+    Transform t0{{a0, a1, a2, z0, z1, z2}, {0, 1, 2, 3}};
+    Transform t1{{a0, a1, a2, z0, z2, z1}, {0, 2, 1, 3}};
 
-    /* Involution that swaps the interior and exterior of the main
-     * circle.
-     */
-    Transform inv{{a0, a1, a2, a0, a2, a1}, {0, 2, 1, 3}};
-
-    stack.emplace_back(NodeType::B, t*canonical::p.inverse(), data0);
-    stack.emplace_back(NodeType::B, t*canonical::p.inverse()*inv, data1);
+    stack.emplace_back(NodeType::B, t0, data0);
+    stack.emplace_back(NodeType::B, t1, data1);
 
     while (stack.size()) {
         State state = stack.back();

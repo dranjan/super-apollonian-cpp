@@ -117,13 +117,12 @@ int main(int argc, char* argv[]) {
         RGBColor::decode24(0x111111),
     };
 
-    Complex a{1.0};
-    Complex b{std::exp(2i*(M_PI/3))};
-    Complex c{std::exp(-2i*(M_PI/3))};
+    double f = -(2 + std::sqrt(3.0));
+    Complex a{f};
+    Complex b{f*std::exp(2i*(M_PI/3))};
+    Complex c{f*std::exp(-2i*(M_PI/3))};
 
-    MobiusTransformation m
-        = MobiusTransformation::cross_ratio(a, b, c).inverse();
-    double r0 = m(Circle{0, -1, 2}).radius();
+    double r0 = std::sqrt(3);
 
     RenderingVisitor visitor{renderer, &colors, r0, 1.0/res};
     generate_apollonian_gasket(a, b, c, 0, 1, visitor);
