@@ -54,7 +54,9 @@ extern const ApollonianTransformation p;
  */
 extern const TransformationGraph<2, ApollonianTransformation> graph;
 
-/* Circle through a0, a1, and a2. */
+/* Circle through a0, a1, and a2. This is the main circle of the
+ * canonical gasket.
+ */
 extern const Circle c;
 
 } // canonical
@@ -104,6 +106,12 @@ ApollonianState<Data>::ApollonianState(NodeType type,
 
 inline double
 measure_node_a(const MobiusTransformation& m) {
+    /* Equivalently:
+     *     w0 = m(canonical::a0)
+     *     w1 = m(canonical::a1)
+     *     w2 = m(canonical::a2)
+     * The implementation below is slighty faster.
+     */
     Complex w0 = m.v00_/m.v10_;
     Complex w1 = m.v01_/m.v11_;
     Complex w2 = (m.v00_ + m.v01_)/(m.v10_ + m.v11_);
@@ -187,6 +195,9 @@ generate_apollonian_gasket(
     Transform t0{{a0, a1, a2, z0, z1, z2}, {0, 1, 2, 3}};
     Transform t1{{a0, a1, a2, z0, z2, z1}, {0, 2, 1, 3}};
 
+    /* The two seeds, namely the interior and exterior of the main
+     * circle.
+     */
     stack.emplace_back(NodeType::B, t0, data0);
     stack.emplace_back(NodeType::B, t1, data1);
 
