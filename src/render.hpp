@@ -9,6 +9,7 @@
 #include "riemann_sphere.hpp"
 #include "color.hpp"
 #include "circle.hpp"
+#include "box.hpp"
 
 namespace apollonian {
 
@@ -22,10 +23,7 @@ public:
     void save(const std::string& filename) const;
 
 public:
-    double xmin_;
-    double xmax_;
-    double ymin_;
-    double ymax_;
+    Box bbox_;
 
     Cairo::RefPtr<Cairo::ImageSurface> surface_;
     Cairo::RefPtr<Cairo::Context> ctx_;
@@ -41,7 +39,8 @@ CairoRenderer::render_circle(const Circle& circle, const RGBColor& color)
 
     if (radius < 0) {
         radius = -radius;
-        ctx_->rectangle(xmin_, ymin_, xmax_-xmin_, ymax_-ymin_);
+        ctx_->rectangle(bbox_.xmin, bbox_.ymin,
+                        bbox_.xmax - bbox_.xmin, bbox_.ymax - bbox_.ymin);
     }
     ctx_->arc(center.real(), center.imag(), radius, 0, 2*M_PI);
     ctx_->set_source_rgb(color.r_, color.g_, color.b_);
