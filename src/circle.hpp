@@ -39,6 +39,8 @@ public:
 
     Circle reverse() const;
 
+    double operator () (const PComplex& z) const;
+
 public:
     /* The full matrix of the quadratic form is
      *         v00_   v01_
@@ -112,6 +114,13 @@ Circle::radius() const {
 inline Circle
 Circle::reverse() const {
     return {-v00_, -v01_, -v11_};
+}
+
+inline double
+Circle::operator () (const PComplex& z) const {
+    return v00_*std::norm(z.v0_) +
+           2*(v01_*z.v0_*std::conj(z.v1_)).real() +
+           v11_*std::norm(z.v1_);
 }
 
 } // appollonian

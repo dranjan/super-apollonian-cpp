@@ -7,27 +7,32 @@
 #include "circle.hpp"
 #include "apollonian.hpp"
 #include "render.hpp"
+#include "box.hpp"
 
 using namespace apollonian;
 
 class RenderingVisitor {
 public:
-    using State = ApollonianState<int>;
+    struct ExtraData {
+        IntersectionType intersection_type;
+        int level;
+    };
+
+    using State = ApollonianState<ExtraData>;
 
 public:
     RenderingVisitor(CairoRenderer& renderer,
                      const RGBColor (*colors_)[4],
                      double r0, double threshold);
 
-    bool visit_node(const State& s);
+    bool visit_node(State& s);
 
     void report() const;
-    int transform_data(int data, NodeType type,
-                       const ApollonianTransformation& t) const;
 
 protected:
     bool visit_node_a(const State& s);
     bool visit_node_b(const State& s);
+    void transform_data(State& s) const;
 
     RGBColor get_color(const Circle& c, unsigned int index) const;
 
@@ -48,7 +53,12 @@ RenderingVisitor::RenderingVisitor(CairoRenderer& renderer,
 }
 
 bool
-RenderingVisitor::visit_node(const State& s) {
+RenderingVisitor::visit_node(State& s) {
+    transform_data(s);
+    if (s.data_.intersection_type == IntersectionType::Outside) {
+        return false;
+    }
+
     switch (s.type_) {
     case NodeType::A:
         return visit_node_a(s);
@@ -72,7 +82,7 @@ RenderingVisitor::visit_node_b(const State& s) {
     renderer_.render_circle(c, get_color(c, s.t_.g1_.g_.v_[3]));
     ++count_;
 
-    return s.data_ < 1 && s.size() >= threshold_;
+    return s.data_.level < 1 && s.size() >= threshold_;
 }
 
 RGBColor
@@ -86,13 +96,14 @@ RenderingVisitor::get_color(const Circle& c, unsigned int index) const {
     return (*colors_)[index].blend(RGBColor::white, 1 - f);
 }
 
-int
-RenderingVisitor::transform_data(
-        int data, NodeType type,
-        const ApollonianTransformation& t) const
-{
-    (void)t;
-    return data + (type == NodeType::B);
+void
+RenderingVisitor::transform_data(State& s) const {
+    s.data_.level += (s.type_ == NodeType::B);
+
+    if (s.data_.intersection_type == IntersectionType::Intersects) {
+        s.data_.intersection_type =
+            renderer_.bbox_.intersects_circle(s);
+    }
 }
 
 void
@@ -131,7 +142,9 @@ int main(int argc, char* argv[]) {
     double r0 = std::sqrt(3);
 
     RenderingVisitor visitor{renderer, &colors, r0, 1.0/res};
-    generate_apollonian_gasket(a, b, c, 0, 1, visitor);
+    RenderingVisitor::ExtraData data0{IntersectionType::Intersects, -1};
+    RenderingVisitor::ExtraData data1{IntersectionType::Intersects, 0};
+    generate_apollonian_gasket(a, b, c, data0, data1, visitor);
 
     visitor.report();
     renderer.save(filename);
