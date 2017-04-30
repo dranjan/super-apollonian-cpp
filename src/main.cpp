@@ -25,14 +25,15 @@ public:
                      const RGBColor (*colors_)[4],
                      double r0, double threshold);
 
-    bool visit_node(State& s);
+    bool visit_node(const State& s);
+    ExtraData get_data(const State& parent, NodeType type,
+                       const ApollonianTransformation& t) const;
 
     void report() const;
 
 protected:
     bool visit_node_a(const State& s);
     bool visit_node_b(const State& s);
-    void transform_data(State& s) const;
 
     RGBColor get_color(const Circle& c, unsigned int index) const;
 
@@ -53,8 +54,7 @@ RenderingVisitor::RenderingVisitor(CairoRenderer& renderer,
 }
 
 bool
-RenderingVisitor::visit_node(State& s) {
-    transform_data(s);
+RenderingVisitor::visit_node(const State& s) {
     if (s.data_.intersection_type == IntersectionType::Outside) {
         return false;
     }
@@ -96,14 +96,19 @@ RenderingVisitor::get_color(const Circle& c, unsigned int index) const {
     return (*colors_)[index].blend(RGBColor::white, 1 - f);
 }
 
-void
-RenderingVisitor::transform_data(State& s) const {
-    s.data_.level += (s.type_ == NodeType::B);
+RenderingVisitor::ExtraData
+RenderingVisitor::get_data(const State& parent, NodeType type,
+                           const ApollonianTransformation& t) const
+{
+    ExtraData data = parent.data_;
+    data.level += (type == NodeType::B);
 
-    if (s.data_.intersection_type == IntersectionType::Intersects) {
-        s.data_.intersection_type =
-            renderer_.bbox_.intersects_circle(s);
+    if (data.intersection_type == IntersectionType::Intersects) {
+        data.intersection_type =
+            renderer_.bbox_.intersects_circle(t.g0_(canonical::c));
     }
+
+    return data;
 }
 
 void
@@ -142,8 +147,8 @@ int main(int argc, char* argv[]) {
     double r0 = std::sqrt(3);
 
     RenderingVisitor visitor{renderer, &colors, r0, 1.0/res};
-    RenderingVisitor::ExtraData data0{IntersectionType::Intersects, -1};
-    RenderingVisitor::ExtraData data1{IntersectionType::Intersects, 0};
+    RenderingVisitor::ExtraData data0{IntersectionType::Intersects, 0};
+    RenderingVisitor::ExtraData data1{IntersectionType::Intersects, 1};
     generate_apollonian_gasket(a, b, c, data0, data1, visitor);
 
     visitor.report();

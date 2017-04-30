@@ -92,7 +92,7 @@ public:
 public:
     const NodeType type_;
     const ApollonianTransformation t_;
-    Data data_;
+    const Data data_;
 };
 
 template <typename Data>
@@ -157,16 +157,21 @@ ApollonianState<Data>::operator Circle () const {
  * counterclockwise around the circle, then data0 is interior and data1
  * is exterior, being swapped if the points are ordered clockwise.
  *
- * The Visitor type should have the method
+ * The Visitor type should have the methods
  *
- *     bool Visitor::visit_node(ApollonianState<Data>& state);
+ *     bool Visitor::visit_node(const ApollonianState<Data>& state);
+ *     Data Visitor::get_data(const ApollonianState<Data>& parent,
+ *                            NodeType type,
+ *                            const ApollonianTransformation t) const;
  *
  * The return value of visit_node indicates whether we are interested
  * in further iterations of this node.  visit_node will be called once
  * for each generated node (triangle and circle).  The order of nodes
  * is unspecified, but a given node will always be visited before its
- * children.  visit_node may modify state.data_, which otherwise will be
- * a copy of the parent's data.
+ * children.
+ *
+ * get_data should return the child node's data given the parent node
+ * and child node's type and transformation.
  */
 template <typename Data, typename Visitor>
 void
@@ -202,8 +207,9 @@ generate_apollonian_gasket(
             unsigned int index = static_cast<unsigned int>(state.type_);
             for (const auto& edge : canonical::graph.edges_[index]) {
                 NodeType type = static_cast<NodeType>(edge.type_index);
-                stack.emplace_back(type, state.t_*edge.transform,
-                                   state.data_);
+                auto t = state.t_*edge.transform;
+                stack.emplace_back(type, t,
+                                   visitor.get_data(state, type, t));
             }
         }
     }
