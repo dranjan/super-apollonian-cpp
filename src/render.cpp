@@ -11,7 +11,7 @@ CairoRenderer::CairoRenderer(
 {
     ctx_->scale(pixel_res, pixel_res);
     ctx_->translate(w/(2*pixel_res), h/(2*pixel_res));
-    ctx_->translate(center.real(), center.imag());
+    ctx_->translate(-center.real(), -center.imag());
 
     ctx_->set_fill_rule(Cairo::FILL_RULE_EVEN_ODD);
 
