@@ -69,7 +69,7 @@ RenderingVisitor::visit_node(const State& s) {
     }
 
     return false;
-};
+}
 
 bool
 RenderingVisitor::visit_node_a(const State& s) {
