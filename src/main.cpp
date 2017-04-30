@@ -136,8 +136,6 @@ int main(int argc, char* argv[]) {
 
     size_t w = 2160;
     size_t h = 2160;
-    //size_t w = 540;
-    //size_t h = 540;
     double res = 270;
     CairoRenderer renderer(w, h, Complex(-2.4, -2.0), res,
                            RGBColor::black);
