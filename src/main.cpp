@@ -15,7 +15,7 @@ class RenderingVisitor {
 public:
     struct ExtraData {
         IntersectionType intersection_type;
-        int level;
+        double c[4];
     };
 
     using State = ApollonianState<ExtraData>;
@@ -35,7 +35,7 @@ protected:
     bool visit_node_a(const State& s);
     bool visit_node_b(const State& s);
 
-    RGBColor get_color(const Circle& c, unsigned int index) const;
+    RGBColor get_color(const State& s) const;
 
 private:
     CairoRenderer& renderer_;
@@ -79,21 +79,22 @@ RenderingVisitor::visit_node_a(const State& s) {
 bool
 RenderingVisitor::visit_node_b(const State& s) {
     Circle c = s;
-    renderer_.render_circle(c, get_color(c, s.t_.g1_.g_.v_[3]));
+    renderer_.render_circle(c, get_color(s));
     ++count_;
 
-    return s.data_.level < 1 && s.size() >= threshold_;
+    return s.size() >= threshold_;
+}
+
+inline double get_component(double f) {
+    return f/(1 + f);
 }
 
 RGBColor
-RenderingVisitor::get_color(const Circle& c, unsigned int index) const {
-    double r1 = c.radius();
-    if (r1 < 0 || r1 > r0_) {
-        r1 = r0_;
-    }
-
-    double f = 1.0/(1.0 - 0.5*std::log(r1/r0_));
-    return (*colors_)[index].blend(RGBColor::white, 1 - f);
+RenderingVisitor::get_color(const State& s) const {
+    double w = s.data_.c[3]/3;
+    return RGBColor(get_component(s.data_.c[0] + w),
+                    get_component(s.data_.c[1] + w),
+                    get_component(s.data_.c[2] + w));
 }
 
 RenderingVisitor::ExtraData
@@ -101,11 +102,18 @@ RenderingVisitor::get_data(const State& parent, NodeType type,
                            const ApollonianTransformation& t) const
 {
     ExtraData data = parent.data_;
-    data.level += (type == NodeType::B);
+    Circle c = t.g0_(canonical::c);
 
     if (data.intersection_type == IntersectionType::Intersects) {
         data.intersection_type =
-            renderer_.bbox_.intersects_circle(t.g0_(canonical::c));
+            renderer_.bbox_.intersects_circle(c);
+    }
+    if (type == NodeType::B &&
+        data.intersection_type != IntersectionType::Outside)
+    {
+        double r = std::abs(c.radius());
+        double f = 0.25 * std::pow(r/(1 + r*r)*4, 0.6);
+        data.c[t.g1_.g_.v_[3]] += f;
     }
 
     return data;
@@ -128,8 +136,10 @@ int main(int argc, char* argv[]) {
 
     size_t w = 2160;
     size_t h = 2160;
+    //size_t w = 540;
+    //size_t h = 540;
     double res = 270;
-    CairoRenderer renderer(w, h, Complex(0.0), res,
+    CairoRenderer renderer(w, h, Complex(-2.4, -2.0), res,
                            RGBColor::black);
 
     RGBColor colors[4] = {
@@ -147,8 +157,10 @@ int main(int argc, char* argv[]) {
     double r0 = std::sqrt(3);
 
     RenderingVisitor visitor{renderer, &colors, r0, 1.0/res};
-    RenderingVisitor::ExtraData data0{IntersectionType::Intersects, 0};
-    RenderingVisitor::ExtraData data1{IntersectionType::Intersects, 1};
+    RenderingVisitor::ExtraData data0{IntersectionType::Intersects,
+                                      {0, 0, 0, 0.1}};
+    RenderingVisitor::ExtraData data1{IntersectionType::Intersects,
+                                      {0, 0, 0, 0}};
     generate_apollonian_gasket(a, b, c, data0, data1, visitor);
 
     visitor.report();
