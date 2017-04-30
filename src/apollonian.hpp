@@ -122,7 +122,7 @@ measure_node_a(const MobiusTransformation& m) {
 
 inline double
 measure_node_b(const MobiusTransformation& m) {
-    return 2*m(canonical::c).radius();
+    return std::abs(2*m(canonical::c).radius());
 }
 
 template <typename Data>
