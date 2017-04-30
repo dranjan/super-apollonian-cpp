@@ -2,8 +2,8 @@
 
 set -eu
 
-scons
-
-mkdir -p build/output
-
-time build/bin/main build/output/apollonian.png
+pushd build
+ninja
+mkdir -p output
+time bin/main output/apollonian.png
+popd
