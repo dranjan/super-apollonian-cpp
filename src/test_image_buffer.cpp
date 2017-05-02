@@ -20,8 +20,8 @@ int main(int argc, const char* argv[]) {
 
     ImageBuffer<RGBColor> image(h, w);
     image.fill(RGBColor::white);
-    draw_circle(image, 1080, 1080, 720,
-                RGBColor::black, RGBColor::white);
+    draw_circle_complement(image, 1080, 1080, 720,
+                           RGBColor::black, RGBColor::white);
     image.save(filename);
 
     return 0;
