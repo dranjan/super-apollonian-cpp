@@ -27,7 +27,8 @@ double compute_boundary_fraction(
 void
 draw_circle(ImageBuffer<RGBColor>& image,
             double xc, double yc, double r,
-            const RGBColor& color)
+            const RGBColor& new_color,
+            const RGBColor& old_color)
 {
     int rows = image.rows();
     int cols = image.cols();
@@ -39,6 +40,8 @@ draw_circle(ImageBuffer<RGBColor>& image,
 
     int ymax{std::min(rows-1, int(std::floor(yc + (r+s))))};
     if (ymax < 0) return;
+
+    RGBColor diff = new_color - old_color;
 
     for (int y = ymin; y <= ymax; ++y) {
         double d0 = std::sqrt(std::max(0.0, square(r+s) - square(y - yc)));
@@ -53,20 +56,17 @@ draw_circle(ImageBuffer<RGBColor>& image,
         if (xmin1 < xmax1) {
             for (int x = xmin0; x < xmin1; ++x) {
                 double a = compute_boundary_fraction(xc, yc, r, x, y, s);
-                const RGBColor& pixel = image(y, x);
-                image(y, x) = pixel.blend(color, a);
+                image(y, x) += diff*a;
             }
-            image.fill_row(color, y, xmin1, xmax1+1);
+            image.fill_row(new_color, y, xmin1, xmax1+1);
             for (int x = xmax1+1; x <= xmax0; ++x) {
                 double a = compute_boundary_fraction(xc, yc, r, x, y, s);
-                const RGBColor& pixel = image(y, x);
-                image(y, x) = pixel.blend(color, a);
+                image(y, x) += diff*a;
             }
         } else {
             for (int x = xmin0; x <= xmax0; ++x) {
                 double a = compute_boundary_fraction(xc, yc, r, x, y, s);
-                const RGBColor& pixel = image(y, x);
-                image(y, x) = pixel.blend(color, a);
+                image(y, x) += diff*a;
             }
         }
     }

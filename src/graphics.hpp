@@ -27,6 +27,7 @@ inline uint8_t RGBATraits<apollonian::RGBColor>::a() const {
 void
 draw_circle(ImageBuffer<apollonian::RGBColor>& image,
             double xc, double yc, double r,
-            const apollonian::RGBColor& color);
+            const apollonian::RGBColor& new_color,
+            const apollonian::RGBColor& old_color);
 
 #endif // GRAPHICS_HPP

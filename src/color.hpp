@@ -13,8 +13,15 @@ public:
     static RGBColor
     decode24(uint32_t h);
 
+    RGBColor& operator *= (double alpha);
+    RGBColor& operator /= (double alpha);
+    RGBColor& operator += (const RGBColor& other);
+    RGBColor& operator -= (const RGBColor& other);
+
     RGBColor operator * (double alpha) const;
+    RGBColor operator / (double alpha) const;
     RGBColor operator + (const RGBColor& other) const;
+    RGBColor operator - (const RGBColor& other) const;
     RGBColor blend(const RGBColor& other, double alpha) const;
 
     static const RGBColor white;
@@ -41,14 +48,68 @@ RGBColor::decode24(uint32_t h) {
     return RGBColor(r, g, b);
 }
 
+inline RGBColor&
+RGBColor::operator *= (double alpha) {
+    r_ *= alpha;
+    g_ *= alpha;
+    b_ *= alpha;
+
+    return *this;
+}
+
+inline RGBColor&
+RGBColor::operator /= (double alpha) {
+    r_ /= alpha;
+    g_ /= alpha;
+    b_ /= alpha;
+
+    return *this;
+}
+
+inline RGBColor&
+RGBColor::operator += (const RGBColor& other) {
+    r_ += other.r_;
+    g_ += other.g_;
+    b_ += other.b_;
+
+    return *this;
+}
+
+inline RGBColor&
+RGBColor::operator -= (const RGBColor& other) {
+    r_ -= other.r_;
+    g_ -= other.g_;
+    b_ -= other.b_;
+
+    return *this;
+}
+
 inline RGBColor
 RGBColor::operator * (double alpha) const {
-    return {r_*alpha, g_*alpha, b_*alpha};
+    RGBColor value(*this);
+    value *= alpha;
+    return value;
+}
+
+inline RGBColor
+RGBColor::operator / (double alpha) const {
+    RGBColor value(*this);
+    value /= alpha;
+    return value;
 }
 
 inline RGBColor
 RGBColor::operator + (const RGBColor& other) const {
-    return {r_ + other.r_, g_ + other.g_, b_ + other.b_};
+    RGBColor value(*this);
+    value += other;
+    return value;
+}
+
+inline RGBColor
+RGBColor::operator - (const RGBColor& other) const {
+    RGBColor value(*this);
+    value -= other;
+    return value;
 }
 
 inline RGBColor
