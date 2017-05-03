@@ -36,4 +36,10 @@ draw_circle_complement(ImageBuffer<apollonian::RGBColor>& image,
                        const apollonian::RGBColor& new_color,
                        const apollonian::RGBColor& old_color);
 
+void
+draw_half_space(ImageBuffer<apollonian::RGBColor>& image,
+                double a, double b, double c,
+                const apollonian::RGBColor& new_color,
+                const apollonian::RGBColor& old_color);
+
 #endif // GRAPHICS_HPP
