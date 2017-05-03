@@ -10,7 +10,7 @@ inline double square(double x) {
     return x*x;
 }
 
-double compute_boundary_fraction(
+double compute_circle_boundary_fraction(
         double xc, double yc, double r,
         int x, int y, double s)
 {
@@ -59,17 +59,17 @@ draw_circle(ImageBuffer<RGBColor>& image,
 
         if (xmin1 < xmax1) {
             for (int x = xmin0; x < xmin1; ++x) {
-                double a = compute_boundary_fraction(xc, yc, r, x, y, s);
+                double a = compute_circle_boundary_fraction(xc, yc, r, x, y, s);
                 image(y, x) += diff*a;
             }
             image.fill_row(new_color, y, xmin1, xmax1+1);
             for (int x = xmax1+1; x <= xmax0; ++x) {
-                double a = compute_boundary_fraction(xc, yc, r, x, y, s);
+                double a = compute_circle_boundary_fraction(xc, yc, r, x, y, s);
                 image(y, x) += diff*a;
             }
         } else {
             for (int x = xmin0; x <= xmax0; ++x) {
-                double a = compute_boundary_fraction(xc, yc, r, x, y, s);
+                double a = compute_circle_boundary_fraction(xc, yc, r, x, y, s);
                 image(y, x) += diff*a;
             }
         }
@@ -110,16 +110,16 @@ void draw_circle_complement(ImageBuffer<RGBColor>& image,
         image.fill_row(new_color, y, 0, xmin0);
         if (xmin1 < xmax1) {
             for (int x = xmin0; x < xmin1; ++x) {
-                double a = compute_boundary_fraction(xc, yc, r, x, y, s);
+                double a = compute_circle_boundary_fraction(xc, yc, r, x, y, s);
                 image(y, x) += diff*(1-a);
             }
             for (int x = xmax1+1; x <= xmax0; ++x) {
-                double a = compute_boundary_fraction(xc, yc, r, x, y, s);
+                double a = compute_circle_boundary_fraction(xc, yc, r, x, y, s);
                 image(y, x) += diff*(1-a);
             }
         } else {
             for (int x = xmin0; x <= xmax0; ++x) {
-                double a = compute_boundary_fraction(xc, yc, r, x, y, s);
+                double a = compute_circle_boundary_fraction(xc, yc, r, x, y, s);
                 image(y, x) += diff*(1-a);
             }
         }
