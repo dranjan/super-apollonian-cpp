@@ -26,6 +26,18 @@ double compute_circle_boundary_fraction(
                           (r - s + t)*(s - r + t)))/(M_PI*ss);
 }
 
+double compute_line_boundary_fraction(
+        double a, double b, double c,
+        int x, int y, double s)
+{
+    double t = a*x + b*y + c;
+    if (t >= s) return 0;
+    if (t <= -s) return 1;
+    double ss = square(s);
+    double tt = square(t);
+    return (ss*std::acos(t/s) - t*std::sqrt(ss - tt))/(M_PI*ss);
+}
+
 } // namespace
 
 void
@@ -127,5 +139,85 @@ void draw_circle_complement(ImageBuffer<RGBColor>& image,
     }
     for (int y = ymax+1; y < rows; ++y) {
         image.fill_row(new_color, y, 0, cols);
+    }
+}
+
+/* a*x + b*y + c <= 0 */
+void
+draw_half_space(ImageBuffer<apollonian::RGBColor>& image,
+                double a, double b, double c,
+                const apollonian::RGBColor& new_color,
+                const apollonian::RGBColor& old_color)
+{
+    int rows = image.rows();
+    int cols = image.cols();
+
+    double d = std::hypot(a, b);
+    a /= d;
+    b /= d;
+    c /= d;
+
+    double s = std::sqrt(0.5);
+    double c0 = c - s;
+    double c1 = c + s;
+
+    RGBColor diff = new_color - old_color;
+
+    if (b < 0) {
+        if (a < 0) {
+            int ymin{std::max(0, int(std::ceil(-(c1 + a*(cols-1))/b)))};
+            int ymax{std::min(rows, int(std::floor(-c0/b)))};
+            for (int y = ymin; y <= ymax; ++y) {
+                int xmin0{std::max(0, int(std::ceil(-(c0 + b*y)/a)))};
+                int xmin1{std::min(cols, int(std::floor(-(c1 + b*y)/a)))};
+                for (int x = xmin0; x <= xmin1; ++x) {
+                    double f = compute_line_boundary_fraction(a, b, c, x, y, s);
+                    image(y, x) += diff*f;
+                }
+                image.fill_row(new_color, y, xmin1+1, cols);
+            }
+            image.fill_rect(new_color, ymax+1, rows, 0, cols);
+        } else {
+            int ymin{std::max(0, int(std::ceil(-c1/b)))};
+            int ymax{std::min(rows, int(std::floor(-(c0 + a*(cols-1))/b)))};
+            for (int y = ymin; y <= ymax; ++y) {
+                int xmin0{std::min(cols, int(std::floor(-(c0 + b*y)/a)))};
+                int xmin1{std::max(0, int(std::ceil(-(c1 + b*y)/a)))};
+                image.fill_row(new_color, y, 0, xmin1);
+                for (int x = xmin1; x <= xmin0; ++x) {
+                    double f = compute_line_boundary_fraction(a, b, c, x, y, s);
+                    image(y, x) += diff*f;
+                }
+            }
+            image.fill_rect(new_color, ymax+1, rows, 0, cols);
+        }
+    } else {
+        if (a < 0) {
+            int ymin{std::max(0, int(std::ceil(-c1/b)))};
+            int ymax{std::min(rows, int(std::floor(-(c0 + a*(cols-1))/b)))};
+            image.fill_rect(new_color, 0, ymin, 0, cols);
+            for (int y = ymin; y <= ymax; ++y) {
+                int xmin0{std::max(0, int(std::ceil(-(c0 + b*y)/a)))};
+                int xmin1{std::min(cols, int(std::floor(-(c1 + b*y)/a)))};
+                for (int x = xmin0; x <= xmin1; ++x) {
+                    double f = compute_line_boundary_fraction(a, b, c, x, y, s);
+                    image(y, x) += diff*f;
+                }
+                image.fill_row(new_color, y, xmin1+1, cols);
+            }
+        } else {
+            int ymin{std::max(0, int(std::ceil(-(c1 + a*(cols-1))/b)))};
+            int ymax{std::min(rows, int(std::floor(-c0/b)))};
+            image.fill_rect(new_color, 0, ymin, 0, cols);
+            for (int y = ymin; y <= ymax; ++y) {
+                int xmin0{std::min(cols, int(std::floor(-(c0 + b*y)/a)))};
+                int xmin1{std::max(0, int(std::ceil(-(c1 + b*y)/a)))};
+                image.fill_row(new_color, y, 0, xmin1);
+                for (int x = xmin1; x <= xmin0; ++x) {
+                    double f = compute_line_boundary_fraction(a, b, c, x, y, s);
+                    image(y, x) += diff*f;
+                }
+            }
+        }
     }
 }
