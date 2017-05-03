@@ -13,7 +13,6 @@ inline T clamp(const T& value, const T& min, const T& max) {
     return std::min(max, std::max(min, value));
 }
 
-
 template <typename Pixel>
 struct RGBATraits {
     Pixel& pixel;
