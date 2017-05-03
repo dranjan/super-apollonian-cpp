@@ -4,6 +4,8 @@
 
 using apollonian::RGBColor;
 
+namespace {
+
 inline double square(double x) {
     return x*x;
 }
@@ -23,6 +25,8 @@ double compute_boundary_fraction(
             0.5*std::sqrt((r + s + t)*(r + s - t)*
                           (r - s + t)*(s - r + t)))/(M_PI*ss);
 }
+
+} // namespace
 
 void
 draw_circle(ImageBuffer<RGBColor>& image,
