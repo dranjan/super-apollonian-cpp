@@ -29,6 +29,7 @@ draw_circle(ImageBuffer<apollonian::RGBColor>& image,
             double xc, double yc, double r,
             const apollonian::RGBColor& new_color,
             const apollonian::RGBColor& old_color);
+
 void
 draw_circle_complement(ImageBuffer<apollonian::RGBColor>& image,
                        double xc, double yc, double r,
