@@ -56,9 +56,9 @@ void fill_rect(const Pixel& value, Pixel* data,
 
     fill_row(value, data, data + cols);
 
-    void* p = reinterpret_cast<void*>(data);
+    char* p = reinterpret_cast<char*>(data);
     while (--rows) {
-        memcpy(p + stride, p, cols*sizeof(*p));
+        memcpy(p + stride, p, cols*sizeof(Pixel));
         p += stride;
     }
 }
