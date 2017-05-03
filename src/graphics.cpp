@@ -93,6 +93,7 @@ void draw_circle_complement(ImageBuffer<RGBColor>& image,
     if (ymax < 0) return;
 
     RGBColor diff = new_color - old_color;
+
     for (int y = 0; y < ymin; ++y) {
         image.fill_row(new_color, y, 0, cols);
     }
