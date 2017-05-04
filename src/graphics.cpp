@@ -20,6 +20,8 @@ double compute_circle_boundary_fraction(
     double rr = square(r);
     double ss = square(s);
     double tt = square(t);
+    if (r + t <= s) return rr/ss;
+
     return (ss*std::acos((tt - rr + ss)/(2*s*t)) +
             rr*std::acos((tt - ss + rr)/(2*r*t)) -
             0.5*std::sqrt((r + s + t)*(r + s - t)*
@@ -61,7 +63,12 @@ draw_circle(ImageBuffer<RGBColor>& image,
 
     for (int y = ymin; y <= ymax; ++y) {
         double d0 = std::sqrt(std::max(0.0, square(r+s) - square(y - yc)));
-        double d1 = std::sqrt(std::max(0.0, square(r-s) - square(y - yc)));
+        double d1;
+        if (r > s) {
+            d1 = std::sqrt(std::max(0.0, square(r-s) - square(y - yc)));
+        } else {
+            d1 = 0;
+        }
 
         int xmin1{std::max(0, int(std::ceil(xc - d1)))};
         int xmax1{std::min(cols-1, int(std::floor(xc + d1)))};
@@ -111,7 +118,12 @@ void draw_circle_complement(ImageBuffer<RGBColor>& image,
     }
     for (int y = ymin; y <= ymax; ++y) {
         double d0 = std::sqrt(std::max(0.0, square(r+s) - square(y - yc)));
-        double d1 = std::sqrt(std::max(0.0, square(r-s) - square(y - yc)));
+        double d1;
+        if (r > s) {
+            d1 = std::sqrt(std::max(0.0, square(r-s) - square(y - yc)));
+        } else {
+            d1 = 0;
+        }
 
         int xmin1{std::max(0, int(std::ceil(xc - d1)))};
         int xmax1{std::min(cols-1, int(std::floor(xc + d1)))};
