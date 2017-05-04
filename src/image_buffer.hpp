@@ -1,6 +1,8 @@
 #ifndef IMAGE_BUFFER_HPP
 #define IMAGE_BUFFER_HPP
 
+#include <cstring>
+
 #include <vector>
 #include <algorithm>
 
