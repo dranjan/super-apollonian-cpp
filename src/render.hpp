@@ -10,41 +10,63 @@
 #include "color.hpp"
 #include "circle.hpp"
 #include "box.hpp"
+#include "image_buffer.hpp"
+#include "graphics.hpp"
 
 namespace apollonian {
 
-class CairoRenderer {
+class Renderer {
 public:
-    CairoRenderer(size_t w, size_t h, const Complex& center, double res,
-                  const RGBColor& color);
+    Renderer(int w, int h, const Complex& center, double res,
+             const RGBColor& color);
 
 public:
-    void render_circle(const Circle& circle, const RGBColor& color);
+    void render_circle(const Circle& circle, const RGBColor& new_color,
+                       const RGBColor& old_color);
     void save(const std::string& filename) const;
+    void map(const Complex& z, double& col, double& row) const;
+    Complex unmap(double col, double row) const;
 
 public:
     Box bbox_;
-
-    Cairo::RefPtr<Cairo::ImageSurface> surface_;
-    Cairo::RefPtr<Cairo::Context> ctx_;
+    ImageBuffer<RGBColor> image_;
+    Complex center_;
+    double res_;
 };
 
 inline void
-CairoRenderer::render_circle(const Circle& circle, const RGBColor& color)
+Renderer::render_circle(const Circle& circle, const RGBColor& new_color,
+                        const RGBColor& old_color)
 {
-    // TODO: handle lines as a degenerate case
-
-    Complex center = circle.center();
-    double radius = circle.radius();
-
-    if (radius < 0) {
-        radius = -radius;
-        ctx_->rectangle(bbox_.xmin, bbox_.ymin,
-                        bbox_.xmax - bbox_.xmin, bbox_.ymax - bbox_.ymin);
+    if (circle.v00_ == 0) {
+        double a = circle.v01_.real()/res_;
+        double b = -circle.v01_.imag()/res_;
+        double c = circle.v11_ + (circle.v01_*center_).real()
+                 - 0.5*a*image_.cols() + 0.5*b*image_.rows();
+        draw_half_plane(image_, a, b, c, new_color, old_color);
+    } else {
+        double xc;
+        double yc;
+        map(circle.center(), xc, yc);
+        double r = circle.radius()*res_;
+        if (r < 0) {
+            draw_circle_complement(image_, xc, yc, -r, new_color, old_color);
+        } else {
+            draw_circle(image_, xc, yc, r, new_color, old_color);
+        }
     }
-    ctx_->arc(center.real(), center.imag(), radius, 0, 2*M_PI);
-    ctx_->set_source_rgb(color.r_, color.g_, color.b_);
-    ctx_->fill();
+}
+
+inline void
+Renderer::map(const Complex& z, double& col, double& row) const {
+    col = 0.5*image_.cols() + res_*(z.real() - center_.real());
+    row = 0.5*image_.rows() + res_*(z.imag() - center_.imag());
+}
+
+inline Complex
+Renderer::unmap(double row, double col) const {
+    return {center_.real() + (col - 0.5*image_.cols())/res_,
+            center_.imag() + (row - 0.5*image_.rows())/res_};
 }
 
 } // apollonian

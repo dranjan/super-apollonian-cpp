@@ -6,6 +6,7 @@ sources = [
   'src/apollonian.cpp',
   'src/color.cpp',
   'src/render.cpp',
+  'src/graphics.cpp'
 ]
 executable('bin/main',
     sources: sources,

@@ -6,34 +6,6 @@
 #include <vector>
 #include <algorithm>
 
-// XXX
-#include <string>
-#include <cairomm/surface.h>
-
-template <typename T>
-inline T clamp(const T& value, const T& min, const T& max) {
-    return std::min(max, std::max(min, value));
-}
-
-template <typename Pixel>
-struct RGBATraits {
-    Pixel& pixel;
-    uint8_t r() const;
-    uint8_t g() const;
-    uint8_t b() const;
-    uint8_t a() const;
-};
-
-template <typename Pixel>
-unsigned char* write_pixel(const Pixel& pixel, unsigned char* p) {
-    const RGBATraits<Pixel> rgba{const_cast<Pixel&>(pixel)};
-    *((uint32_t*)p) = rgba.b() +
-                      (rgba.g() << 8) +
-                      (rgba.r() << 16) +
-                      (rgba.a() << 24);
-    return p + 4;
-}
-
 template <typename Pixel>
 void fill_row(const Pixel& value, Pixel* begin, Pixel* end) {
     if (end <= begin) return;
@@ -84,8 +56,6 @@ public:
 
     int rows() const;
     int cols() const;
-
-    void save(const std::string& filename) const;
 
 private:
     int rows_;
@@ -163,22 +133,6 @@ int ImageBuffer<Pixel>::rows() const {
 template <typename Pixel>
 int ImageBuffer<Pixel>::cols() const {
     return cols_;
-}
-
-template <typename Pixel>
-void ImageBuffer<Pixel>::save(const std::string& filename) const {
-    Cairo::RefPtr<Cairo::ImageSurface> surface =
-        Cairo::ImageSurface::create(Cairo::FORMAT_ARGB32, cols_, rows_);
-
-    unsigned char* data = surface->get_data();
-    int stride = surface->get_stride();
-    for (int row = 0; row < rows_; ++row) {
-        unsigned char* p = data + row*stride;
-        for (int col = 0; col < cols_; ++col) {
-            p = write_pixel(operator () (row, col), p);
-        }
-    }
-    surface->write_to_png(filename);
 }
 
 
