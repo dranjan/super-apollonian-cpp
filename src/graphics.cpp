@@ -1,6 +1,6 @@
-#include <cmath>
-
 #include "graphics.hpp"
+
+#include <cmath>
 
 using apollonian::RGBColor;
 
