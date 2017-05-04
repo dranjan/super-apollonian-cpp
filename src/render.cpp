@@ -40,7 +40,7 @@ void Renderer::save(const std::string& filename) const {
     unsigned char* data = surface->get_data();
     int stride = surface->get_stride();
     for (int row = 0; row < rows; ++row) {
-        unsigned char* p = data + row*stride;
+        unsigned char* p = data + (rows - row - 1)*stride;
         for (int col = 0; col < cols; ++col) {
             p = write_pixel(image_(row, col), p);
         }
