@@ -28,13 +28,15 @@ public:
     static const RGBColor black;
 
 public:
-    double r_;
-    double g_;
-    double b_;
+    int32_t r_;
+    int32_t g_;
+    int32_t b_;
 };
 
 inline RGBColor::RGBColor(double r, double g, double b)
-    : r_{r}, g_{g}, b_{b}
+    : r_{int32_t(r*0x7fffffff)},
+      g_{int32_t(g*0x7fffffff)},
+      b_{int32_t(b*0x7fffffff)}
 {
 }
 

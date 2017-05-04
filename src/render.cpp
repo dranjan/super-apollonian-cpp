@@ -16,8 +16,9 @@ inline T clamp(const T& value, const T& min, const T& max) {
     return std::min(max, std::max(min, value));
 }
 inline uint8_t
-get_component(double value) {
-    return clamp(value, 0.0, 1.0)*0xff;
+get_component(int32_t value) {
+    if (value < 0) return 0;
+    return value >> 23;
 }
 
 inline unsigned char*
