@@ -22,7 +22,7 @@ int main(int argc, const char* argv[]) {
     image.fill(RGBColor::white);
     //draw_circle_complement(image, 1080, 1080, 720,
     //                       RGBColor::black, RGBColor::white);
-    draw_half_space(image, -1, -2, 3*1080,
+    draw_half_plane(image, -1, -2, 3*1080,
                     RGBColor::black, RGBColor::white);
     image.save(filename);
 

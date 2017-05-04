@@ -144,7 +144,7 @@ void draw_circle_complement(ImageBuffer<RGBColor>& image,
 
 /* a*x + b*y + c <= 0 */
 void
-draw_half_space(ImageBuffer<apollonian::RGBColor>& image,
+draw_half_plane(ImageBuffer<apollonian::RGBColor>& image,
                 double a, double b, double c,
                 const apollonian::RGBColor& new_color,
                 const apollonian::RGBColor& old_color)
