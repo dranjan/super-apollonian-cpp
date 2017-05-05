@@ -157,7 +157,7 @@ int main(int argc, char* argv[]) {
 
     std::string filename(argv[1]);
 
-    size_t w = 2160;
+    size_t w = 3840;
     size_t h = 2160;
     double res = 270;
     RGBColor bgcolor = RGBColor::black;
