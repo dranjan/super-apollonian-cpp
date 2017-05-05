@@ -171,9 +171,10 @@ int main(int argc, char* argv[]) {
     };
 
     double f = -(2 + std::sqrt(3.0));
+    Complex z = 0.6 + 0.8i;
     Complex a{f};
-    Complex b{f*std::exp(2i*(M_PI/3))};
-    Complex c{f*std::exp(-2i*(M_PI/3))};
+    Complex b{f*z};
+    Complex c{f*z*z};
 
     double r0 = std::sqrt(3);
 
