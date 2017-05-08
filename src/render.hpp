@@ -39,10 +39,10 @@ Renderer::render_circle(const Circle& circle, const RGBColor& new_color,
                         const RGBColor& old_color)
 {
     if (circle.v00_ == 0) {
-        double a = circle.v01_.real()/res_;
-        double b = -circle.v01_.imag()/res_;
-        double c = circle.v11_ + (circle.v01_*center_).real()
-                 - 0.5*a*image_.cols() + 0.5*b*image_.rows();
+        double a = 2*circle.v01_.real()/res_;
+        double b = 2*circle.v01_.imag()/res_;
+        double c = circle.v11_ + 2*(circle.v01_*center_).real()
+                 - 0.5*a*image_.cols() - 0.5*b*image_.rows();
         draw_half_plane(image_, a, b, c, new_color, old_color);
     } else {
         double xc;
