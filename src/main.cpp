@@ -132,7 +132,7 @@ RenderingVisitor::get_data(const State& parent, NodeType type,
         data.intersection_type_ != IntersectionType::Outside)
     {
         double r = std::abs(c.radius());
-        double f = 0.25 * std::pow(r/(1 + r*r)*4, 0.6);
+        double f = 0.25 * std::pow(1/(1/r + r)*4, 0.6);
         data.c_[t.g1_.g_.v_[3]] += f;
 
         data.bg_ = data.fg_;
