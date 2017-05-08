@@ -178,7 +178,7 @@ draw_half_plane(ImageBuffer<apollonian::RGBColor>& image,
     if (b < 0) {
         if (a < 0) {
             int ymin{std::max(0, int(std::ceil(-(c1 + a*(cols-1))/b)))};
-            int ymax{std::min(rows, int(std::floor(-c0/b)))};
+            int ymax{std::min(rows-1, int(std::floor(-c0/b)))};
             for (int y = ymin; y <= ymax; ++y) {
                 int xmin0{std::max(0, int(std::ceil(-(c0 + b*y)/a)))};
                 int xmin1{std::min(cols, int(std::floor(-(c1 + b*y)/a)))};
@@ -191,7 +191,7 @@ draw_half_plane(ImageBuffer<apollonian::RGBColor>& image,
             image.fill_rect(new_color, ymax+1, rows, 0, cols);
         } else {
             int ymin{std::max(0, int(std::ceil(-c1/b)))};
-            int ymax{std::min(rows, int(std::floor(-(c0 + a*(cols-1))/b)))};
+            int ymax{std::min(rows-1, int(std::floor(-(c0 + a*(cols-1))/b)))};
             for (int y = ymin; y <= ymax; ++y) {
                 int xmin0{std::min(cols, int(std::floor(-(c0 + b*y)/a)))};
                 int xmin1{std::max(0, int(std::ceil(-(c1 + b*y)/a)))};
@@ -206,7 +206,7 @@ draw_half_plane(ImageBuffer<apollonian::RGBColor>& image,
     } else {
         if (a < 0) {
             int ymin{std::max(0, int(std::ceil(-c1/b)))};
-            int ymax{std::min(rows, int(std::floor(-(c0 + a*(cols-1))/b)))};
+            int ymax{std::min(rows-1, int(std::floor(-(c0 + a*(cols-1))/b)))};
             image.fill_rect(new_color, 0, ymin, 0, cols);
             for (int y = ymin; y <= ymax; ++y) {
                 int xmin0{std::max(0, int(std::ceil(-(c0 + b*y)/a)))};
@@ -219,7 +219,7 @@ draw_half_plane(ImageBuffer<apollonian::RGBColor>& image,
             }
         } else {
             int ymin{std::max(0, int(std::ceil(-(c1 + a*(cols-1))/b)))};
-            int ymax{std::min(rows, int(std::floor(-c0/b)))};
+            int ymax{std::min(rows-1, int(std::floor(-c0/b)))};
             image.fill_rect(new_color, 0, ymin, 0, cols);
             for (int y = ymin; y <= ymax; ++y) {
                 int xmin0{std::min(cols, int(std::floor(-(c0 + b*y)/a)))};
