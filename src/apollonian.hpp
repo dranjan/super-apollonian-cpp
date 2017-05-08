@@ -104,41 +104,12 @@ ApollonianState<Data>::ApollonianState(NodeType type,
 {
 }
 
-inline double
-measure_node_a(const MobiusTransformation& m) {
-    /* Equivalently:
-     *     w0 = m(canonical::a0)
-     *     w1 = m(canonical::a1)
-     *     w2 = m(canonical::a2)
-     * The implementation below is slighty faster.
-     */
-    Complex w0 = m.v00_/m.v10_;
-    Complex w1 = m.v01_/m.v11_;
-    Complex w2 = (m.v00_ + m.v01_)/(m.v10_ + m.v11_);
-    return std::max({std::abs(w0 - w1),
-                     std::abs(w1 - w2),
-                     std::abs(w2 - w0)});
-}
-
-inline double
-measure_node_b(const MobiusTransformation& m) {
-    return std::abs(2*m(canonical::c).radius());
-}
-
 template <typename Data>
 inline double
 ApollonianState<Data>::size() const {
-    const auto& m = t_.g0_;
-    switch (type_) {
-    case NodeType::A:
-        return measure_node_a(m);
-    case NodeType::B:
-        return measure_node_b(m);
-    default:
-        assert(false);
-    }
-
-    return 0;
+    auto c = t_.g0_(canonical::c);
+    if (c.v00_ <= 0.0) return HUGE_VAL;
+    return std::abs(2*c.radius());
 }
 
 template <typename Data>
