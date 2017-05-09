@@ -33,8 +33,7 @@ public:
 
 public:
     RenderingVisitor(Renderer& renderer,
-                     const RGBColor (*colors_)[4],
-                     double r0, double threshold);
+                     double threshold);
 
     bool visit_node(const State& s);
     ExtraData get_data(const State& parent, NodeType type,
@@ -51,8 +50,6 @@ protected:
 
 private:
     Renderer& renderer_;
-    const RGBColor (*colors_)[4];
-    double r0_;
     double threshold_;
     int count_;
 };
@@ -66,10 +63,8 @@ RenderingVisitor::ExtraData::ExtraData(IntersectionType intersection_type,
 }
 
 RenderingVisitor::RenderingVisitor(Renderer& renderer,
-                                   const RGBColor (*colors)[4],
-                                   double r0, double threshold)
-    : renderer_{renderer}, colors_{colors}, r0_{r0},
-      threshold_{threshold}, count_{0}
+                                   double threshold)
+    : renderer_{renderer}, threshold_{threshold}, count_{0}
 {
 }
 
@@ -163,22 +158,13 @@ int main(int argc, char* argv[]) {
     RGBColor bgcolor = RGBColor::black;
     Renderer renderer(w, h, Complex(-2.4, -2.0), res, bgcolor);
 
-    RGBColor colors[4] = {
-        RGBColor::decode24(0xa0fa0f),
-        RGBColor::decode24(0x0fa0fa),
-        RGBColor::decode24(0xfa0fa0),
-        RGBColor::decode24(0x111111),
-    };
-
     double f = -(2 + std::sqrt(3.0));
     Complex z = 0.6 + 0.8i;
     Complex a{f};
     Complex b{f*z};
     Complex c{f*z*z};
 
-    double r0 = std::sqrt(3);
-
-    RenderingVisitor visitor{renderer, &colors, r0, 1.0/res};
+    RenderingVisitor visitor{renderer, 1.0/res};
     RenderingVisitor::ExtraData data0{IntersectionType::Intersects,
                                       {0, 0, 0, 0.1}, bgcolor};
     RenderingVisitor::ExtraData data1{IntersectionType::Intersects,
