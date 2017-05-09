@@ -75,6 +75,9 @@ double circle_quadrant_area(
     return area;
 }
 
+/* Compute the area of the intersection of a circular disk and square pixel
+ * with sides of unit length.
+ */
 double compute_circle_boundary_fraction(
         double xc, double yc, double r,
         double x0, double y0)
@@ -93,6 +96,9 @@ double compute_circle_boundary_fraction(
         circle_quadrant_area(rr, y0, -x1, y1, -x0);
 }
 
+/* Compute the area of the intersection of a half plane and square pixel
+ * with sides of unit length.
+ */
 double compute_line_boundary_fraction(
         double a, double b, double c,
         double x0, double y0)
