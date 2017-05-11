@@ -20,6 +20,16 @@ using ApollonianTransformation
 
 namespace canonical {
 
+enum TransformationId {
+    M0,
+    M1,
+    M2,
+    N0,
+    N1,
+    N2,
+    P,
+};
+
 /* These are the six tangency points involving the four circles in the
  * "canonical" Apollonian gasket.
  */

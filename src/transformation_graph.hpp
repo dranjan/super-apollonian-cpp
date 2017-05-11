@@ -9,6 +9,7 @@ namespace apollonian {
 template <typename Transform>
 struct GraphEdge {
     unsigned int type_index;
+    unsigned int id;
     Transform transform;
 };
 

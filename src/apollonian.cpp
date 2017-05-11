@@ -36,20 +36,20 @@ const TransformationGraph<2, ApollonianTransformation>
 graph{
     /* Edges for node type A (triangle) */
     std::vector<EdgeType>{
-        EdgeType{0, m0},
-        EdgeType{0, m1},
-        EdgeType{0, m2},
-        EdgeType{1, p},
+        EdgeType{0, M0, m0},
+        EdgeType{0, M1, m1},
+        EdgeType{0, M2, m2},
+        EdgeType{1, P, p},
     },
     /* Edges for node type B (circle) */
     std::vector<GraphEdge<ApollonianTransformation>>{
-        EdgeType{1, m0},
-        EdgeType{1, m1},
-        EdgeType{1, m2},
-        EdgeType{0, n0},
-        EdgeType{0, n1},
-        EdgeType{0, n2},
-        EdgeType{0, p},
+        EdgeType{1, M0, m0},
+        EdgeType{1, M1, m1},
+        EdgeType{1, M2, m2},
+        EdgeType{0, N0, n0},
+        EdgeType{0, N1, n1},
+        EdgeType{0, N2, n2},
+        EdgeType{0, P, p},
     },
 };
 
