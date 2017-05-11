@@ -27,6 +27,7 @@ public:
         std::array<double, 4> c_;
         RGBColor bg_;
         RGBColor fg_;
+        int level_;
     };
 
     using State = ApollonianState<ExtraData>;
@@ -57,7 +58,7 @@ private:
 RenderingVisitor::ExtraData::ExtraData(IntersectionType intersection_type,
                                        const std::array<double, 4>& c,
                                        const RGBColor& bg)
-    : intersection_type_{intersection_type}, c_{c}, bg_{bg}
+    : intersection_type_{intersection_type}, c_{c}, bg_{bg}, level_{0}
 {
     set_fg();
 }
@@ -126,6 +127,8 @@ RenderingVisitor::get_data(const State& parent, NodeType type,
     if (type == NodeType::B &&
         data.intersection_type_ != IntersectionType::Outside)
     {
+        ++data.level_;
+
         double r = std::abs(c.radius());
         double f = 0.25 * std::pow(1/(1/r + r)*4, 0.6);
         data.c_[t.g1_.g_.v_[3]] += f;
