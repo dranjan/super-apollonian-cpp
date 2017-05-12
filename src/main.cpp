@@ -10,6 +10,7 @@
 #include "box.hpp"
 
 using namespace apollonian;
+using canonical::TransformationId;
 
 class RenderingVisitor {
 public:
@@ -38,6 +39,7 @@ public:
 
     bool visit_node(const State& s);
     ExtraData get_data(const State& parent, NodeType type,
+                       TransformationId id,
                        const ApollonianTransformation& t) const;
 
     void report() const;
@@ -115,10 +117,30 @@ RenderingVisitor::visit_node_b(const State& s) {
 
 RenderingVisitor::ExtraData
 RenderingVisitor::get_data(const State& parent, NodeType type,
+                           TransformationId id,
                            const ApollonianTransformation& t) const
 {
     ExtraData data = parent.data_;
     Circle c = t.g0_(canonical::c);
+
+    switch (id) {
+    case TransformationId::M0:
+        break;
+    case TransformationId::M1:
+        break;
+    case TransformationId::M2:
+        break;
+    case TransformationId::N0:
+        break;
+    case TransformationId::N1:
+        break;
+    case TransformationId::N2:
+        break;
+    case TransformationId::P:
+        break;
+    default:
+        assert(false);
+    }
 
     if (data.intersection_type_ == IntersectionType::Intersects) {
         data.intersection_type_ =

@@ -143,6 +143,7 @@ ApollonianState<Data>::operator Circle () const {
  *     bool Visitor::visit_node(const ApollonianState<Data>& state);
  *     Data Visitor::get_data(const ApollonianState<Data>& parent,
  *                            NodeType type,
+ *                            TransformationId id,
  *                            const ApollonianTransformation t) const;
  *
  * The return value of visit_node indicates whether we are interested
@@ -188,9 +189,11 @@ generate_apollonian_gasket(
             unsigned int index = static_cast<unsigned int>(state.type_);
             for (const auto& edge : canonical::graph.edges_[index]) {
                 NodeType type = static_cast<NodeType>(edge.type_index);
+                canonical::TransformationId id =
+                    static_cast<canonical::TransformationId>(edge.id);
                 auto t = state.t_*edge.transform;
                 stack.emplace_back(type, t,
-                                   visitor.get_data(state, type, t));
+                                   visitor.get_data(state, type, id, t));
             }
         }
     }
