@@ -37,6 +37,7 @@ public:
     RenderingVisitor(Renderer& renderer,
                      double threshold);
 
+    /* Callbacks */
     bool visit_node(const State& s);
     ExtraData get_data(const State& parent, NodeType type,
                        TransformationId id,
