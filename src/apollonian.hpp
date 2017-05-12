@@ -20,7 +20,7 @@ using ApollonianTransformation
 
 namespace canonical {
 
-enum TransformationId {
+enum class TransformationId {
     M0,
     M1,
     M2,

@@ -32,6 +32,14 @@ const ApollonianTransformation p{ {a0, a1, a2, b0, b1, b2}, {0, 1, 2, 3}};
 
 using EdgeType = GraphEdge<ApollonianTransformation>;
 
+static constexpr int M0 = static_cast<int>(TransformationId::M0);
+static constexpr int M1 = static_cast<int>(TransformationId::M1);
+static constexpr int M2 = static_cast<int>(TransformationId::M2);
+static constexpr int N0 = static_cast<int>(TransformationId::N0);
+static constexpr int N1 = static_cast<int>(TransformationId::N1);
+static constexpr int N2 = static_cast<int>(TransformationId::N2);
+static constexpr int P = static_cast<int>(TransformationId::P);
+
 const TransformationGraph<2, ApollonianTransformation>
 graph{
     /* Edges for node type A (triangle) */
