@@ -14,12 +14,18 @@ using canonical::TransformationId;
 
 class RenderingVisitor {
 public:
+    struct ColorData {
+    public:
+        RGBColor color_;
+        int level_;
+
+        ColorData operator | (const ColorData& other) const;
+    };
+
     struct ExtraData {
     public:
         ExtraData() = default;
-        ExtraData(IntersectionType intersection_type,
-                  const std::array<double, 4>& c,
-                  const RGBColor& bg);
+        ExtraData(const ExtraData&) = default;
 
         void set_fg();
 
@@ -27,8 +33,8 @@ public:
         IntersectionType intersection_type_;
         std::array<double, 4> c_;
         RGBColor bg_;
-        RGBColor fg_;
-        int level_;
+        ColorData self_fg_;
+        std::array<ColorData, 3> point_bg_;
     };
 
     using State = ApollonianState<ExtraData>;
@@ -42,6 +48,8 @@ public:
     ExtraData get_data(const State& parent, NodeType type,
                        TransformationId id,
                        const ApollonianTransformation& t) const;
+
+    void render(const PComplex& a, const PComplex& b, const PComplex& c);
 
     void report() const;
 
@@ -58,12 +66,11 @@ private:
     int count_;
 };
 
-RenderingVisitor::ExtraData::ExtraData(IntersectionType intersection_type,
-                                       const std::array<double, 4>& c,
-                                       const RGBColor& bg)
-    : intersection_type_{intersection_type}, c_{c}, bg_{bg}, level_{0}
+RenderingVisitor::ColorData
+RenderingVisitor::ColorData::operator | (
+        const RenderingVisitor::ColorData& other) const
 {
-    set_fg();
+    return level_ >= other.level_? *this : other;
 }
 
 RenderingVisitor::RenderingVisitor(Renderer& renderer,
@@ -79,9 +86,9 @@ inline double get_component(double f) {
 inline void
 RenderingVisitor::ExtraData::set_fg() {
     double w = c_[3]/3;
-    fg_ = RGBColor(get_component(c_[0] + w),
-                   get_component(c_[1] + w),
-                   get_component(c_[2] + w));
+    self_fg_.color_ = RGBColor(get_component(c_[0] + w),
+                               get_component(c_[1] + w),
+                               get_component(c_[2] + w));
 }
 
 bool
@@ -110,7 +117,7 @@ RenderingVisitor::visit_node_a(const State& s) {
 bool
 RenderingVisitor::visit_node_b(const State& s) {
     Circle c = s;
-    renderer_.render_circle(c, s.data_.fg_, s.data_.bg_);
+    renderer_.render_circle(c, s.data_.self_fg_.color_, s.data_.bg_);
     ++count_;
 
     return s.size() >= threshold_;
@@ -150,17 +157,54 @@ RenderingVisitor::get_data(const State& parent, NodeType type,
     if (type == NodeType::B &&
         data.intersection_type_ != IntersectionType::Outside)
     {
-        ++data.level_;
+        ++data.self_fg_.level_;
 
         double r = std::abs(c.radius());
         double f = 0.25 * std::pow(1/(1/r + r)*4, 0.6);
         data.c_[t.g1_.g_.v_[3]] += f;
 
-        data.bg_ = data.fg_;
+        data.bg_ = data.self_fg_.color_;
         data.set_fg();
     }
 
     return data;
+}
+
+void
+RenderingVisitor::render(const PComplex& a,
+                         const PComplex& b,
+                         const PComplex& c)
+{
+    ExtraData data0;
+    data0.intersection_type_ = IntersectionType::Intersects;
+    data0.c_[0] = 0;
+    data0.c_[1] = 0;
+    data0.c_[2] = 0;
+    data0.c_[3] = 0.1;
+    data0.bg_ = RGBColor::black;
+    data0.self_fg_.level_ = 1;
+
+    ExtraData data1;
+    data1.intersection_type_ = IntersectionType::Intersects;
+    data1.c_[0] = 0;
+    data1.c_[1] = 0;
+    data1.c_[2] = 0;
+    data1.c_[3] = 0;
+    data1.bg_ = RGBColor::black;
+    data1.self_fg_.level_ = 0;
+
+    data0.set_fg();
+    data1.set_fg();
+
+    data0.point_bg_[0] = data0.self_fg_ | data1.self_fg_;
+    data0.point_bg_[1] = data0.self_fg_ | data1.self_fg_;
+    data0.point_bg_[2] = data0.self_fg_ | data1.self_fg_;
+
+    data1.point_bg_[0] = data0.self_fg_ | data1.self_fg_;
+    data1.point_bg_[1] = data0.self_fg_ | data1.self_fg_;
+    data1.point_bg_[2] = data0.self_fg_ | data1.self_fg_;
+
+    generate_apollonian_gasket(a, b, c, data0, data1, *this);
 }
 
 void
@@ -190,13 +234,8 @@ int main(int argc, char* argv[]) {
     Complex b{f*z};
     Complex c{f*z*z};
 
-    RenderingVisitor visitor{renderer, 1.0/res};
-    RenderingVisitor::ExtraData data0{IntersectionType::Intersects,
-                                      {0, 0, 0, 0.1}, bgcolor};
-    RenderingVisitor::ExtraData data1{IntersectionType::Intersects,
-                                      {0, 0, 0, 0}, bgcolor};
-    generate_apollonian_gasket(a, b, c, data0, data1, visitor);
-
+    RenderingVisitor visitor{renderer, 10.0/res};
+    visitor.render(a, b, c);
     visitor.report();
     renderer.save(filename);
 
