@@ -234,7 +234,7 @@ int main(int argc, char* argv[]) {
     Complex b{f*z};
     Complex c{f*z*z};
 
-    RenderingVisitor visitor{renderer, 10.0/res};
+    RenderingVisitor visitor{renderer, 1.0/res};
     visitor.render(a, b, c);
     visitor.report();
     renderer.save(filename);
