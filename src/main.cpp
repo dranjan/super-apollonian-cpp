@@ -27,8 +27,6 @@ public:
         ExtraData() = default;
         ExtraData(const ExtraData&) = default;
 
-        void set_fg();
-
     public:
         IntersectionType intersection_type_;
         std::array<double, 4> c_;
@@ -41,7 +39,8 @@ public:
 
 public:
     RenderingVisitor(Renderer& renderer,
-                     double threshold);
+                     double threshold,
+                     const std::array<RGBColor, 4>& colors);
 
     /* Callbacks */
     bool visit_node(const State& s);
@@ -53,17 +52,19 @@ public:
 
     void report() const;
 
-public:
-    static RGBColor compute_fgcolor(const ExtraData& data);
-
 protected:
     bool visit_node_a(const State& s);
     bool visit_node_b(const State& s);
+
+    void set_fg(ExtraData& extra) const;
 
 private:
     Renderer& renderer_;
     double threshold_;
     int count_;
+
+    // indexed by [rgb_index][data_index]
+    std::array<std::array<double, 4>, 3> color_table_;
 };
 
 RenderingVisitor::ColorData
@@ -73,42 +74,34 @@ RenderingVisitor::ColorData::operator | (
     return level_ >= other.level_? *this : other;
 }
 
-RenderingVisitor::RenderingVisitor(Renderer& renderer,
-                                   double threshold)
+RenderingVisitor::RenderingVisitor(
+    Renderer& renderer,
+    double threshold,
+    const std::array<RGBColor, 4>& colors)
     : renderer_{renderer}, threshold_{threshold}, count_{0}
 {
+    for (int k = 0; k < 4; ++k) {
+        color_table_[0][k] = double(colors[k].r_)/0x7fffffff;
+        color_table_[1][k] = double(colors[k].g_)/0x7fffffff;
+        color_table_[2][k] = double(colors[k].b_)/0x7fffffff;
+    }
 }
 
 inline double get_component(double f) {
     return f/(1 + f);
 }
 
-double CM[3][4] = {
-//  {1.0, 0.0, 0.0, 1.0/3},
-//  {0.0, 1.0, 0.0, 1.0/3},
-//  {0.0, 0.0, 1.0, 1.0/3}
-//};
-    {1.0, 0.8, 0.0, 0.3},
-    {0.0, 0.4, 0.6, 0.5},
-    {0.6, 0.0, 1.0, 0.3}
-};
-
 inline void
-RenderingVisitor::ExtraData::set_fg() {
-    double cv[3] = {0.0, 0.0, 0.0};
+RenderingVisitor::set_fg(ExtraData& data) const {
+    double rgb[3] = {0.0, 0.0, 0.0};
     for (int k = 0; k < 3; ++k) {
       for (int j = 0; j < 4; ++j) {
-        cv[k] += CM[k][j]*c_[j] / 2;
+        rgb[k] += color_table_[k][j]*data.c_[j] / 2;
       }
     }
-    self_fg_.color_ = RGBColor(get_component(cv[0]),
-                               get_component(cv[1]),
-                               get_component(cv[2]));
-
-    //double w = c_[3]/3;
-    //self_fg_.color_ = RGBColor(get_component(c_[0] + w),
-    //                           get_component(c_[1] + w),
-    //                           get_component(c_[2] + w));
+    data.self_fg_.color_ = RGBColor(get_component(rgb[0]),
+                                    get_component(rgb[1]),
+                                    get_component(rgb[2]));
 }
 
 bool
@@ -184,7 +177,7 @@ RenderingVisitor::get_data(const State& parent, NodeType type,
         data.c_[t.g1_.g_.v_[3]] += f;
 
         data.bg_ = data.self_fg_.color_;
-        data.set_fg();
+        set_fg(data);
     }
 
     return data;
@@ -213,8 +206,8 @@ RenderingVisitor::render(const PComplex& a,
     data1.bg_ = RGBColor::black;
     data1.self_fg_.level_ = 0;
 
-    data0.set_fg();
-    data1.set_fg();
+    set_fg(data0);
+    set_fg(data1);
 
     data0.point_bg_[0] = data0.self_fg_ | data1.self_fg_;
     data0.point_bg_[1] = data0.self_fg_ | data1.self_fg_;
@@ -242,6 +235,11 @@ int main(int argc, char* argv[]) {
 
     std::string filename(argv[1]);
 
+    RGBColor c0(1.0, 0.0, 0.6);
+    RGBColor c1(0.8, 0.4, 0.0);
+    RGBColor c2(0.0, 0.6, 1.0);
+    RGBColor c3(0.3, 0.5, 0.3);
+
     size_t w = 3840;
     size_t h = 2160;
     double res = 540;
@@ -254,7 +252,7 @@ int main(int argc, char* argv[]) {
     Complex b{f*z};
     Complex c{f*z*z};
 
-    RenderingVisitor visitor{renderer, 1.0/res};
+    RenderingVisitor visitor{renderer, 1.0/res, {c0, c1, c2, c3}};
     visitor.render(a, b, c);
     visitor.report();
     renderer.save(filename);
