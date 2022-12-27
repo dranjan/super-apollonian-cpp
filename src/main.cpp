@@ -244,7 +244,7 @@ int main(int argc, char* argv[]) {
 
     size_t w = 3840;
     size_t h = 2160;
-    double res = 270;
+    double res = 540;
     RGBColor bgcolor = RGBColor::black;
     Renderer renderer(w, h, Complex(-2.4, -2.0), res, bgcolor);
 
