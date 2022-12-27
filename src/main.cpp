@@ -240,9 +240,15 @@ int main(int argc, char* argv[]) {
     RGBColor c2(0.0, 0.6, 1.0);
     RGBColor c3(0.3, 0.5, 0.3);
 
-    size_t w = 3840;
-    size_t h = 2160;
-    double res = 540;
+    /* These values can be increased to reduce computation for quicker
+     * testing. Set both to 1 for the full rendering.
+     */
+    int scale_down = 2;           /* Increase to make a smaller image. */
+    double threshold_factor = 2;  /* Increase to use fewer circles. */
+
+    size_t w = 3840 / scale_down;
+    size_t h = 2160 / scale_down;
+    double res = 540 / scale_down;
     RGBColor bgcolor = RGBColor::black;
     Renderer renderer(w, h, Complex(-2.4, -2.0), res, bgcolor);
 
@@ -252,7 +258,8 @@ int main(int argc, char* argv[]) {
     Complex b{f*z};
     Complex c{f*z*z};
 
-    RenderingVisitor visitor{renderer, 1.0/res, {c0, c1, c2, c3}};
+    RenderingVisitor visitor{renderer, threshold_factor/res,
+                             {c0, c1, c2, c3}};
     visitor.render(a, b, c);
     visitor.report();
     renderer.save(filename);
