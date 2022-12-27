@@ -83,12 +83,32 @@ inline double get_component(double f) {
     return f/(1 + f);
 }
 
+double CM[3][4] = {
+//  {1.0, 0.0, 0.0, 1.0/3},
+//  {0.0, 1.0, 0.0, 1.0/3},
+//  {0.0, 0.0, 1.0, 1.0/3}
+//};
+    {1.0, 0.8, 0.0, 0.3},
+    {0.0, 0.4, 0.6, 0.5},
+    {0.6, 0.0, 1.0, 0.3}
+};
+
 inline void
 RenderingVisitor::ExtraData::set_fg() {
-    double w = c_[3]/3;
-    self_fg_.color_ = RGBColor(get_component(c_[0] + w),
-                               get_component(c_[1] + w),
-                               get_component(c_[2] + w));
+    double cv[3] = {0.0, 0.0, 0.0};
+    for (int k = 0; k < 3; ++k) {
+      for (int j = 0; j < 4; ++j) {
+        cv[k] += CM[k][j]*c_[j] / 2;
+      }
+    }
+    self_fg_.color_ = RGBColor(get_component(cv[0]),
+                               get_component(cv[1]),
+                               get_component(cv[2]));
+
+    //double w = c_[3]/3;
+    //self_fg_.color_ = RGBColor(get_component(c_[0] + w),
+    //                           get_component(c_[1] + w),
+    //                           get_component(c_[2] + w));
 }
 
 bool
