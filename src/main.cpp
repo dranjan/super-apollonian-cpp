@@ -243,8 +243,8 @@ int main(int argc, char* argv[]) {
     /* These values can be increased to reduce computation for quicker
      * testing. Set both to 1 for the full rendering.
      */
-    int scale_down = 2;           /* Increase to make a smaller image. */
-    double threshold_factor = 2;  /* Increase to use fewer circles. */
+    int scale_down = 1;           /* Increase to make a smaller image. */
+    double threshold_factor = 1;  /* Increase to use fewer circles. */
 
     size_t w = 3840 / scale_down;
     size_t h = 2160 / scale_down;
