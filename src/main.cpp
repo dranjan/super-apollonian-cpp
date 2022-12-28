@@ -64,7 +64,7 @@ private:
     double threshold_;
     int count_;
 
-    // indexed by [rgb_index][data_index]
+    /* indexed by [rgb_index][data_index] */
     std::array<std::array<double, 4>, 3> color_table_;
 };
 
@@ -96,10 +96,17 @@ RenderingVisitor::set_fg(ExtraData& data) const {
         rgb[k] += color_table_[k][j]*data.c_[j] / 2;
       }
     }
+    /* This may look a bit arbitrary, but here's an explanation.
+     * - Since the color computation can potentially give unbounded
+     *   results, first we scale everything back to [0, 1).
+     * - We apply a secondary scaling to bring the result closer to
+     *   white at the brightest points, which makes the result look
+     *   a bit nicer.
+     */
     double m = std::max({rgb[0], rgb[1], rgb[2]});
     double g = 1/(1 + m);
     double q = (m*m*m*m)/16;
-    double f = 1/(1 + q/(1 + q)); //1/(std::exp(m) - m*(1 + m/2*(1 + m/3)));
+    double f = 1/(1 + q/(1 + q));
     for (int k = 0; k < 3; ++k) {
         rgb[k] *= g;
         rgb[k] = 1 - f + f*rgb[k];
