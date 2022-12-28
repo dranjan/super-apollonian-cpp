@@ -1,5 +1,6 @@
 #include <cmath>
 #include <cassert>
+#include <algorithm>
 #include <iostream>
 #include <string>
 
@@ -87,10 +88,6 @@ RenderingVisitor::RenderingVisitor(
     }
 }
 
-inline double get_component(double f) {
-    return f/(1 + f);
-}
-
 inline void
 RenderingVisitor::set_fg(ExtraData& data) const {
     double rgb[3] = {0.0, 0.0, 0.0};
@@ -99,9 +96,15 @@ RenderingVisitor::set_fg(ExtraData& data) const {
         rgb[k] += color_table_[k][j]*data.c_[j] / 2;
       }
     }
-    data.self_fg_.color_ = RGBColor(get_component(rgb[0]),
-                                    get_component(rgb[1]),
-                                    get_component(rgb[2]));
+    double m = std::max({rgb[0], rgb[1], rgb[2]});
+    double g = 1/(1 + m);
+    double q = (m*m*m*m)/16;
+    double f = 1/(1 + q/(1 + q)); //1/(std::exp(m) - m*(1 + m/2*(1 + m/3)));
+    for (int k = 0; k < 3; ++k) {
+        rgb[k] *= g;
+        rgb[k] = 1 - f + f*rgb[k];
+    }
+    data.self_fg_.color_ = RGBColor(rgb[0], rgb[1], rgb[2]);
 }
 
 bool
