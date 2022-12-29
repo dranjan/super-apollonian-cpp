@@ -247,9 +247,9 @@ int main(int argc, char* argv[]) {
     std::string filename(argv[1]);
 
     RGBColor c0(1.0, 0.0, 0.6);
-    RGBColor c1(0.8, 0.4, 0.0);
+    RGBColor c1(0.8, 0.0, 1.0);
     RGBColor c2(0.0, 0.6, 1.0);
-    RGBColor c3(0.3, 0.5, 0.3);
+    RGBColor c3(1.0, 0.6, 0.0);
 
     /* These values can be increased to reduce computation for quicker
      * testing. Set both to 1 for the full rendering.
