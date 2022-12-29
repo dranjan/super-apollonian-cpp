@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-set -eu
+set -euxo pipefail
+
+if [[ ! -e ./build/build.ninja ]]; then
+    ./setup.sh
+fi
 
 pushd build
 ninja
