@@ -259,7 +259,7 @@ int main(int argc, char* argv[]) {
 
     size_t w = 3840 / scale_down;
     size_t h = 2160 / scale_down;
-    double res = 540 / scale_down;
+    double res = 1000 / scale_down;
     RGBColor bgcolor = RGBColor::black;
     Renderer renderer(w, h, Complex(-2.4, -2.0), res, bgcolor);
 
