@@ -8,7 +8,7 @@ sources = [
   'src/render.cpp',
   'src/graphics.cpp'
 ]
-executable('bin/main',
+executable('main',
     sources: sources,
     dependencies: [cairodep],
     cpp_args: ['-std=c++14'])
