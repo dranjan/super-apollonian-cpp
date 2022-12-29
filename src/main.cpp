@@ -104,8 +104,9 @@ RenderingVisitor::set_fg(ExtraData& data) const {
      *   a bit nicer.
      */
     double m = std::max({rgb[0], rgb[1], rgb[2]});
+    double mm = m*m;
     double g = 1/(1 + m);
-    double q = (m*m*m*m)/16;
+    double q = (mm*mm)/16;
     double f = 1/(1 + q/(1 + q));
     for (int k = 0; k < 3; ++k) {
         rgb[k] *= g;
