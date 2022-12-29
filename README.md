@@ -14,7 +14,7 @@ on other OSes with some minor modifications.
 
 To create the image, run `./run.sh` from the Git root directory.
 This will recompile the code, if necesssary, and generate the image.
-You can find the image at `./build/output/apollonian.png`.
+You can find the image at `./build/apollonian.png`.
 
 ## Tweaking and customization
 

@@ -1,5 +1,7 @@
 project('apollonian', 'cpp')
+
 cairodep = dependency('cairomm-1.0')
+
 sources = [
   'src/main.cpp',
   'src/mobius.cpp',
@@ -8,7 +10,13 @@ sources = [
   'src/render.cpp',
   'src/graphics.cpp'
 ]
-executable('main',
-    sources: sources,
-    dependencies: [cairodep],
-    cpp_args: ['-std=c++14'])
+
+main_prog = executable('main',
+  sources: sources,
+  dependencies: [cairodep],
+  cpp_args: ['-std=c++14'])
+
+custom_target('result',
+  output: 'apollonian.png',
+  command: [main_prog, '@OUTPUT@'],
+  build_by_default: true)
