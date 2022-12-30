@@ -1,3 +1,12 @@
+/* In this implementation, we define each pixel to be a square with unit
+ * side length centered at the pixel's nominal coordinates. This is not
+ * the only possible definition of a pixel, or necessarily the best, but
+ * it does result in a very clean and sharp image with no aliasing
+ * artifacts.
+ *
+ * The implementation that follows is pretty technical, but there's
+ * nothing really complicated going on here.
+ */
 #include "graphics.hpp"
 
 #include <cmath>
@@ -279,7 +288,6 @@ void draw_circle_complement(ImageBuffer<RGBColor>& image,
     }
 }
 
-/* a*x + b*y + c <= 0 */
 void
 draw_half_plane(ImageBuffer<apollonian::RGBColor>& image,
                 double a, double b, double c,
