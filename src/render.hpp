@@ -3,9 +3,6 @@
 
 #include <cmath>
 
-#include <cairomm/context.h>
-#include <cairomm/surface.h>
-
 #include "riemann_sphere.hpp"
 #include "color.hpp"
 #include "circle.hpp"

@@ -1,5 +1,8 @@
 #include "render.hpp"
 
+#include <cairomm/context.h>
+#include <cairomm/surface.h>
+
 namespace apollonian {
 
 Renderer::Renderer(
