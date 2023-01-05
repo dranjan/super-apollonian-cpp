@@ -61,7 +61,7 @@ Renderer::map(const Complex& z, double& col, double& row) const {
 }
 
 inline Complex
-Renderer::unmap(double row, double col) const {
+Renderer::unmap(double col, double row) const {
     return {center_.real() + (col - 0.5*image_.cols())/res_,
             center_.imag() + (row - 0.5*image_.rows())/res_};
 }
