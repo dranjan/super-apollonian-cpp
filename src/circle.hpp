@@ -87,7 +87,7 @@ Circle::Circle(double v00, const Complex& v01, double v11)
 
 inline
 Circle::Circle(const Complex& center, double radius)
-    : v00_{1/radius}, v01_{center/radius},
+    : v00_{1/radius}, v01_{-center/radius},
       v11_{std::norm(center)/radius - radius}
 {
 }
@@ -119,7 +119,7 @@ Circle::reverse() const {
 inline double
 Circle::operator () (const PComplex& z) const {
     return v00_*std::norm(z.v0_) +
-           2*(v01_*z.v0_*std::conj(z.v1_)).real() +
+           2*(v01_*std::conj(z.v0_)*z.v1_).real() +
            v11_*std::norm(z.v1_);
 }
 
