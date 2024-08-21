@@ -15,63 +15,63 @@ namespace apollonian {
  * follows immediately from the projective definition, is very
  * convenient.
  */
-class MobiusTransformation {
+class mobius_transformation {
 public:
-    MobiusTransformation() = default;
-    MobiusTransformation(const Complex& v00, const Complex& v01,
-                         const Complex& v10, const Complex& v11);
-    MobiusTransformation(
-            const PComplex& z0, const PComplex& z1, const PComplex& z2,
-            const PComplex& w0, const PComplex& w1, const PComplex& w2);
+    mobius_transformation() = default;
+    mobius_transformation(const dcomplex& v00, const dcomplex& v01,
+                          const dcomplex& v10, const dcomplex& v11);
+    mobius_transformation(
+            const pcomplex& z0, const pcomplex& z1, const pcomplex& z2,
+            const pcomplex& w0, const pcomplex& w1, const pcomplex& w2);
 
-    MobiusTransformation inverse() const;
-    MobiusTransformation operator * (
-            const MobiusTransformation& other) const;
+    mobius_transformation inverse() const;
+    mobius_transformation operator * (
+            const mobius_transformation& other) const;
 
     void normalize();
 
-    static MobiusTransformation
-    cross_ratio(const PComplex& z0, const PComplex& z1, const PComplex& z2);
+    static mobius_transformation
+    cross_ratio(const pcomplex& z0, const pcomplex& z1, const pcomplex& z2);
 
-    static const MobiusTransformation identity;
+    static const mobius_transformation identity;
 
     template <typename T>
     T operator () (const T& t) const;
 
 public:
-    Complex v00_;
-    Complex v01_;
-    Complex v10_;
-    Complex v11_;
+    dcomplex v00_;
+    dcomplex v01_;
+    dcomplex v10_;
+    dcomplex v11_;
 };
 
 inline
-MobiusTransformation::MobiusTransformation(
-        const Complex& v00, const Complex& v01,
-        const Complex& v10, const Complex& v11)
+mobius_transformation::mobius_transformation(
+        const dcomplex& v00, const dcomplex& v01,
+        const dcomplex& v10, const dcomplex& v11)
     : v00_{v00}, v01_{v01}, v10_{v10}, v11_{v11}
 {
 }
 
 inline
-MobiusTransformation::MobiusTransformation(
-        const PComplex& z0, const PComplex& z1, const PComplex& z2,
-        const PComplex& w0, const PComplex& w1, const PComplex& w2)
+mobius_transformation::mobius_transformation(
+        const pcomplex& z0, const pcomplex& z1, const pcomplex& z2,
+        const pcomplex& w0, const pcomplex& w1, const pcomplex& w2)
 {
-    MobiusTransformation p = cross_ratio(z0, z1, z2);
-    MobiusTransformation q = cross_ratio(w0, w1, w2);
+    mobius_transformation p = cross_ratio(z0, z1, z2);
+    mobius_transformation q = cross_ratio(w0, w1, w2);
     *this = q.inverse()*p;
 }
 
-inline MobiusTransformation
-MobiusTransformation::inverse() const {
+inline mobius_transformation
+mobius_transformation::inverse() const {
     return { v11_, -v01_,
             -v10_,  v00_};
 }
 
-inline MobiusTransformation
-MobiusTransformation::operator * (const MobiusTransformation& other) const {
-    return MobiusTransformation{
+inline mobius_transformation
+mobius_transformation::operator * (const mobius_transformation& other) const {
+    return mobius_transformation{
         v00_*other.v00_ + v01_*other.v10_,
         v00_*other.v01_ + v01_*other.v11_,
         v10_*other.v00_ + v11_*other.v10_,
@@ -80,49 +80,49 @@ MobiusTransformation::operator * (const MobiusTransformation& other) const {
 }
 
 inline void
-MobiusTransformation::normalize() {
-    Complex f = std::sqrt(v00_*v11_ - v01_*v10_);
+mobius_transformation::normalize() {
+    dcomplex f = std::sqrt(v00_*v11_ - v01_*v10_);
     v00_ *= f;
     v01_ *= f;
     v10_ *= f;
     v11_ *= f;
 }
 
-inline MobiusTransformation
-MobiusTransformation::cross_ratio(
-        const PComplex& z0, const PComplex& z1, const PComplex& z2)
+inline mobius_transformation
+mobius_transformation::cross_ratio(
+        const pcomplex& z0, const pcomplex& z1, const pcomplex& z2)
 {
-    const Complex& a0(z0.v0_);
-    const Complex& a1(z1.v0_);
-    const Complex& a2(z2.v0_);
+    const dcomplex& a0(z0.v0_);
+    const dcomplex& a1(z1.v0_);
+    const dcomplex& a2(z2.v0_);
 
-    const Complex& b0(z0.v1_);
-    const Complex& b1(z1.v1_);
-    const Complex& b2(z2.v1_);
+    const dcomplex& b0(z0.v1_);
+    const dcomplex& b1(z1.v1_);
+    const dcomplex& b2(z2.v1_);
 
-    Complex det02 = a0*b2 - a2*b0;
-    Complex det21 = a2*b1 - a1*b2;
-    Complex det10 = a1*b0 - a0*b1;
+    dcomplex det02 = a0*b2 - a2*b0;
+    dcomplex det21 = a2*b1 - a1*b2;
+    dcomplex det10 = a1*b0 - a0*b1;
 
-    Complex f = 1.0/std::sqrt(det02*det21*det10);
-    Complex num = det02*f;
-    Complex den = det21*f;
+    dcomplex f = 1.0/std::sqrt(det02*det21*det10);
+    dcomplex num = det02*f;
+    dcomplex den = det21*f;
 
     return { b1*num, -a1*num,
             -b0*den,  a0*den};
 }
 
 template <>
-inline PComplex
-MobiusTransformation::operator () (const PComplex& t) const {
+inline pcomplex
+mobius_transformation::operator () (const pcomplex& t) const {
     return {v00_*t.v0_ + v01_*t.v1_,
             v10_*t.v0_ + v11_*t.v1_};
 }
 
 template <>
-inline Complex
-MobiusTransformation::operator () (const Complex& t) const {
-    return operator () (PComplex(t));
+inline dcomplex
+mobius_transformation::operator () (const dcomplex& t) const {
+    return operator () (pcomplex(t));
 }
 
 } // apollonian

@@ -14,13 +14,13 @@
 
 namespace apollonian {
 
-using ApollonianTransformation
-    = ProductGroup<MobiusTransformation,
-                   OppositeGroup<Permutation<4>>>;
+using apollonian_transformation
+    = product_group<mobius_transformation,
+                    opposite_group<permutation<4>>>;
 
 namespace canonical {
 
-enum class TransformationId {
+enum class transformation_id {
     M0,
     M1,
     M2,
@@ -35,57 +35,57 @@ enum class TransformationId {
  */
 
 /* The three tangency points not involving the fourth circle. */
-extern const PComplex a0;
-extern const PComplex a1;
-extern const PComplex a2;
+extern const pcomplex a0;
+extern const pcomplex a1;
+extern const pcomplex a2;
 
 /* The three tangency points involving the fourth circle. */
-extern const PComplex b0;
-extern const PComplex b1;
-extern const PComplex b2;
+extern const pcomplex b0;
+extern const pcomplex b1;
+extern const pcomplex b2;
 
 /* These relate a node to a subnode of the same type (A -> A or B -> B).
  */
-extern const ApollonianTransformation m0;
-extern const ApollonianTransformation m1;
-extern const ApollonianTransformation m2;
+extern const apollonian_transformation m0;
+extern const apollonian_transformation m1;
+extern const apollonian_transformation m2;
 
 /* These relate a node to a subnode of the other type (A -> B or B ->
  * A).
  */
-extern const ApollonianTransformation n0;
-extern const ApollonianTransformation n1;
-extern const ApollonianTransformation n2;
-extern const ApollonianTransformation p;
+extern const apollonian_transformation n0;
+extern const apollonian_transformation n1;
+extern const apollonian_transformation n2;
+extern const apollonian_transformation p;
 
 /* The transformation graph that generates the gasket itself.  This
  * gasket is a fancier version in which the circles are also filled
  * recursively.
  */
-extern const TransformationGraph<2, ApollonianTransformation> graph;
+extern const transformation_graph<2, apollonian_transformation> graph;
 
 /* Circle through a0, a1, and a2. This is the main circle of the
  * canonical gasket.
  */
-extern const Circle c;
+extern const circle c;
 
 } // canonical
 
-enum class NodeType {
+enum class node_type {
     A = 0,  /* triangle-type */
     B = 1,  /* circle-type */
 };
 
 template <typename Data>
-class ApollonianState {
-    using Transform = ApollonianTransformation;
+class apollonian_state {
+    using transform = apollonian_transformation;
 
 public:
-    ApollonianState() = default;
-    ApollonianState(NodeType type,
-                    const ApollonianTransformation& m,
-                    const Data& data);
-    ApollonianState(const ApollonianState&) = default;
+    apollonian_state() = default;
+    apollonian_state(node_type type,
+                     const apollonian_transformation& m,
+                     const Data& data);
+    apollonian_state(const apollonian_state&) = default;
 
     /* For a type-A node (triangle), the size is a rough approximation
      * to the diameter.  For a type-B node (circle), the size is the
@@ -97,26 +97,26 @@ public:
      * three vertices.  For a type-B node (circle), this is the circle
      * itself.
      */
-    operator Circle() const;
+    operator circle() const;
 
 public:
-    const NodeType type_;
-    const ApollonianTransformation t_;
+    const node_type type_;
+    const apollonian_transformation t_;
     const Data data_;
 };
 
 template <typename Data>
 inline
-ApollonianState<Data>::ApollonianState(NodeType type,
-                                       const ApollonianTransformation& t,
-                                       const Data& data)
+apollonian_state<Data>::apollonian_state(node_type type,
+                                         const apollonian_transformation& t,
+                                         const Data& data)
     : type_{type}, t_{t}, data_{data}
 {
 }
 
 template <typename Data>
 inline double
-ApollonianState<Data>::size() const {
+apollonian_state<Data>::size() const {
     auto c = t_.g0_(canonical::c);
     if (c.v00_ <= 0.0) return HUGE_VAL;
     return std::abs(2*c.radius());
@@ -124,7 +124,7 @@ ApollonianState<Data>::size() const {
 
 template <typename Data>
 inline
-ApollonianState<Data>::operator Circle () const {
+apollonian_state<Data>::operator circle () const {
     return t_.g0_(canonical::c);
 }
 
@@ -140,11 +140,11 @@ ApollonianState<Data>::operator Circle () const {
  *
  * The Visitor type should have the methods
  *
- *     bool Visitor::visit_node(const ApollonianState<Data>& state);
- *     Data Visitor::get_data(const ApollonianState<Data>& parent,
- *                            NodeType type,
- *                            TransformationId id,
- *                            const ApollonianTransformation t) const;
+ *     bool Visitor::visit_node(const apollonian_state<Data>& state);
+ *     Data Visitor::get_data(const apollonian_state<Data>& parent,
+ *                            node_type type,
+ *                            transformation_id id,
+ *                            const apollonian_transformation t) const;
  *
  * The return value of visit_node indicates whether we are interested
  * in further iterations of this node.  visit_node will be called once
@@ -158,12 +158,12 @@ ApollonianState<Data>::operator Circle () const {
 template <typename Data, typename Visitor>
 void
 generate_apollonian_gasket(
-        const PComplex& z0, const PComplex& z1, const PComplex& z2,
+        const pcomplex& z0, const pcomplex& z1, const pcomplex& z2,
         const Data& data0, const Data& data1,
         Visitor& visitor)
 {
-    using State = ApollonianState<Data>;
-    using Transform = ApollonianTransformation;
+    using State = apollonian_state<Data>;
+    using transform = apollonian_transformation;
     using canonical::a0;
     using canonical::a1;
     using canonical::a2;
@@ -173,14 +173,14 @@ generate_apollonian_gasket(
      */
     std::vector<State> stack;
 
-    Transform t0{{a0, a1, a2, z0, z1, z2}, {0, 1, 2, 3}};
-    Transform t1{{a0, a1, a2, z0, z2, z1}, {0, 2, 1, 3}};
+    transform t0{{a0, a1, a2, z0, z1, z2}, {0, 1, 2, 3}};
+    transform t1{{a0, a1, a2, z0, z2, z1}, {0, 2, 1, 3}};
 
     /* The two seeds, namely the interior and exterior of the main
      * circle.
      */
-    stack.emplace_back(NodeType::B, t0, data0);
-    stack.emplace_back(NodeType::B, t1, data1);
+    stack.emplace_back(node_type::B, t0, data0);
+    stack.emplace_back(node_type::B, t1, data1);
 
     while (stack.size()) {
         State state = stack.back();
@@ -188,9 +188,9 @@ generate_apollonian_gasket(
         if (visitor.visit_node(state)) {
             unsigned int index = static_cast<unsigned int>(state.type_);
             for (const auto& edge : canonical::graph.edges_[index]) {
-                NodeType type = static_cast<NodeType>(edge.type_index);
-                canonical::TransformationId id =
-                    static_cast<canonical::TransformationId>(edge.id);
+                node_type type = static_cast<node_type>(edge.type_index);
+                canonical::transformation_id id =
+                    static_cast<canonical::transformation_id>(edge.id);
                 auto t = state.t_*edge.transform;
                 stack.emplace_back(type, t,
                                    visitor.get_data(state, type, id, t));

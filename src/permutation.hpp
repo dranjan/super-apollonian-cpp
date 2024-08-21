@@ -6,33 +6,33 @@
 namespace apollonian {
 
 template <unsigned int N>
-class Permutation {
+class permutation {
 public:
-    Permutation();
-    Permutation(const Permutation&) = default;
+    permutation();
+    permutation(const permutation&) = default;
 
     template <typename... T>
-    Permutation(T... args);
+    permutation(T... args);
 
-    Permutation<N> inverse() const;
-    Permutation<N> operator * (const Permutation<N>& other) const;
+    permutation<N> inverse() const;
+    permutation<N> operator * (const permutation<N>& other) const;
 
     template <typename RandomAccessIteratorIn,
               typename RandomAccessIteratorOut>
     void operator () (const RandomAccessIteratorIn in_ptr,
                       RandomAccessIteratorOut out_ptr) const;
 
-    static Permutation<N> transposition(unsigned int i,
+    static permutation<N> transposition(unsigned int i,
                                         unsigned int j);
 
-    static const Permutation<N> identity;
+    static const permutation<N> identity;
 
 public:
     std::array<unsigned int, N> v_;
 };
 
 template <unsigned int N>
-Permutation<N>::Permutation() {
+permutation<N>::permutation() {
     for (unsigned int k = 0; k < N; ++k) {
         v_[k] = k;
     }
@@ -40,15 +40,15 @@ Permutation<N>::Permutation() {
 
 template <unsigned int N>
 template <typename... T>
-Permutation<N>::Permutation(T... args)
+permutation<N>::permutation(T... args)
     : v_{(unsigned int)(args)...}
 {
 }
 
 template <unsigned int N>
-Permutation<N>
-Permutation<N>::inverse() const {
-    Permutation<N> p;
+permutation<N>
+permutation<N>::inverse() const {
+    permutation<N> p;
     for (unsigned int k = 0; k < N; ++k) {
         p.v_[v_[k]] = k;
     }
@@ -56,18 +56,18 @@ Permutation<N>::inverse() const {
 }
 
 template <unsigned int N>
-Permutation<N>
-Permutation<N>::operator * (const Permutation<N>& other) const
+permutation<N>
+permutation<N>::operator * (const permutation<N>& other) const
 {
-    Permutation<N> p;
+    permutation<N> p;
     (*this)(other.v_.cbegin(), p.v_.begin());
     return p;
 }
 
 template <unsigned int N>
-Permutation<N>
-Permutation<N>::transposition(unsigned int i, unsigned int j) {
-    Permutation<N> p;
+permutation<N>
+permutation<N>::transposition(unsigned int i, unsigned int j) {
+    permutation<N> p;
     p.v_[i] = j;
     p.v_[j] = i;
     return p;
@@ -77,7 +77,7 @@ template <unsigned int N>
 template <typename RandomAccessIteratorIn,
           typename RandomAccessIteratorOut>
 void
-Permutation<N>::operator () (
+permutation<N>::operator () (
         const RandomAccessIteratorIn in_ptr,
         RandomAccessIteratorOut out_ptr) const
 {
@@ -87,8 +87,8 @@ Permutation<N>::operator () (
 }
 
 template <unsigned int N>
-const Permutation<N>
-Permutation<N>::identity;
+const permutation<N>
+permutation<N>::identity;
 
 } // apollonian
 

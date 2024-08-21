@@ -7,25 +7,25 @@
 namespace apollonian {
 
 template <typename Transform>
-struct GraphEdge {
+struct graph_edge {
     unsigned int type_index;
     unsigned int id;
     Transform transform;
 };
 
 template <unsigned int N, typename Transform>
-class TransformationGraph {
+class transformation_graph {
 public:
     template <typename... Args>
-    TransformationGraph(Args&&... args);
+    transformation_graph(Args&&... args);
 
 public:
-    std::array<std::vector<GraphEdge<Transform>>, N> edges_;
+    std::array<std::vector<graph_edge<Transform>>, N> edges_;
 };
 
 template <unsigned int N, typename Transform>
 template <typename... Args>
-TransformationGraph<N, Transform>::TransformationGraph(Args&&... args)
+transformation_graph<N, Transform>::transformation_graph(Args&&... args)
     : edges_{std::forward<Args>(args)...}
 {
 }

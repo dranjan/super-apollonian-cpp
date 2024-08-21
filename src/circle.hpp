@@ -27,19 +27,19 @@ namespace apollonian {
  * The "disk" interpretation in particular is pretty useful for us, so
  * we choose signs consistently.
  */
-class Circle {
+class circle {
 public:
-    Circle() = default;
-    Circle(double v00, const Complex& v01, double v11);
-    Circle(const Complex& center, double radius);
-    Circle(const PComplex& z0, const PComplex& z1, const PComplex& z2);
+    circle() = default;
+    circle(double v00, const dcomplex& v01, double v11);
+    circle(const dcomplex& center, double radius);
+    circle(const pcomplex& z0, const pcomplex& z1, const pcomplex& z2);
 
-    Complex center() const;
+    dcomplex center() const;
     double radius() const;
 
-    Circle reverse() const;
+    circle reverse() const;
 
-    double operator () (const PComplex& z) const;
+    double operator () (const pcomplex& z) const;
 
 public:
     /* The full matrix of the quadratic form is
@@ -47,32 +47,32 @@ public:
      *    conj(v01_)  v11_.
      */
     double  v00_;
-    Complex v01_;
+    dcomplex v01_;
     double  v11_;
 };
 
 template <>
-inline Circle
-MobiusTransformation::operator () (const Circle& t) const {
-    const Complex& v00 =  v11_;
-    const Complex& v01 = -v01_;
-    const Complex& v10 = -v10_;
-    const Complex& v11 =  v00_;
+inline circle
+mobius_transformation::operator () (const circle& t) const {
+    const dcomplex& v00 =  v11_;
+    const dcomplex& v01 = -v01_;
+    const dcomplex& v10 = -v10_;
+    const dcomplex& v11 =  v00_;
 
-    Complex v00h = std::conj(v00);
-    Complex v01h = std::conj(v10);
-    Complex v10h = std::conj(v01);
-    Complex v11h = std::conj(v11);
+    dcomplex v00h = std::conj(v00);
+    dcomplex v01h = std::conj(v10);
+    dcomplex v10h = std::conj(v01);
+    dcomplex v11h = std::conj(v11);
 
-    const Complex& c00 = t.v00_;
-    const Complex& c01 = t.v01_;
-    Complex        c10 = std::conj(t.v01_);
-    const Complex& c11 = t.v11_;
+    const dcomplex& c00 = t.v00_;
+    const dcomplex& c01 = t.v01_;
+    dcomplex        c10 = std::conj(t.v01_);
+    const dcomplex& c11 = t.v11_;
 
-    Complex w00 = c00*v00 + c01*v10;
-    Complex w01 = c00*v01 + c01*v11;
-    Complex w10 = c10*v00 + c11*v10;
-    Complex w11 = c10*v01 + c11*v11;
+    dcomplex w00 = c00*v00 + c01*v10;
+    dcomplex w01 = c00*v01 + c01*v11;
+    dcomplex w10 = c10*v00 + c11*v10;
+    dcomplex w11 = c10*v01 + c11*v11;
 
     return {(v00h*w00 + v01h*w10).real(),
              v00h*w01 + v01h*w11,
@@ -80,44 +80,44 @@ MobiusTransformation::operator () (const Circle& t) const {
 }
 
 inline
-Circle::Circle(double v00, const Complex& v01, double v11)
+circle::circle(double v00, const dcomplex& v01, double v11)
     : v00_{v00}, v01_{v01}, v11_{v11}
 {
 }
 
 inline
-Circle::Circle(const Complex& center, double radius)
+circle::circle(const dcomplex& center, double radius)
     : v00_{1/radius}, v01_{-center/radius},
       v11_{std::norm(center)/radius - radius}
 {
 }
 
 inline
-Circle::Circle(
-        const PComplex& z0, const PComplex& z1, const PComplex& z2)
+circle::circle(
+        const pcomplex& z0, const pcomplex& z1, const pcomplex& z2)
 {
-    MobiusTransformation m
-        = MobiusTransformation::cross_ratio(z0, z1, z2).inverse();
-    *this = m(Circle{0, -1.0, 0});
+    mobius_transformation m
+        = mobius_transformation::cross_ratio(z0, z1, z2).inverse();
+    *this = m(circle{0, -1.0, 0});
 }
 
-inline Complex
-Circle::center() const {
+inline dcomplex
+circle::center() const {
     return -v01_/v00_;
 }
 
 inline double
-Circle::radius() const {
+circle::radius() const {
     return std::sqrt(std::norm(v01_) - v00_*v11_)/v00_;
 }
 
-inline Circle
-Circle::reverse() const {
+inline circle
+circle::reverse() const {
     return {-v00_, -v01_, -v11_};
 }
 
 inline double
-Circle::operator () (const PComplex& z) const {
+circle::operator () (const pcomplex& z) const {
     return v00_*std::norm(z.v0_) +
            2*(v01_*std::conj(z.v0_)*z.v1_).real() +
            v11_*std::norm(z.v1_);

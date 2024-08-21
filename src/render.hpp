@@ -12,28 +12,28 @@
 
 namespace apollonian {
 
-class Renderer {
+class renderer {
 public:
-    Renderer(int w, int h, const Complex& center, double res,
-             const RGBColor& color);
+    renderer(int w, int h, const dcomplex& center, double res,
+             const rgb_color& color);
 
 public:
-    void render_circle(const Circle& circle, const RGBColor& new_color,
-                       const RGBColor& old_color);
+    void render_circle(const circle& circle, const rgb_color& new_color,
+                       const rgb_color& old_color);
     void save(const std::string& filename) const;
-    void map(const Complex& z, double& col, double& row) const;
-    Complex unmap(double col, double row) const;
+    void map(const dcomplex& z, double& col, double& row) const;
+    dcomplex unmap(double col, double row) const;
 
 public:
-    Box bbox_;
-    ImageBuffer<RGBColor> image_;
-    Complex center_;
+    box bbox_;
+    image_buffer<rgb_color> image_;
+    dcomplex center_;
     double res_;
 };
 
 inline void
-Renderer::render_circle(const Circle& circle, const RGBColor& new_color,
-                        const RGBColor& old_color)
+renderer::render_circle(const circle& circle, const rgb_color& new_color,
+                        const rgb_color& old_color)
 {
     if (circle.v00_ == 0) {
         double a = 2*circle.v01_.real()/res_;
@@ -55,13 +55,13 @@ Renderer::render_circle(const Circle& circle, const RGBColor& new_color,
 }
 
 inline void
-Renderer::map(const Complex& z, double& col, double& row) const {
+renderer::map(const dcomplex& z, double& col, double& row) const {
     col = 0.5*image_.cols() + res_*(z.real() - center_.real());
     row = 0.5*image_.rows() + res_*(z.imag() - center_.imag());
 }
 
-inline Complex
-Renderer::unmap(double col, double row) const {
+inline dcomplex
+renderer::unmap(double col, double row) const {
     return {center_.real() + (col - 0.5*image_.cols())/res_,
             center_.imag() + (row - 0.5*image_.rows())/res_};
 }

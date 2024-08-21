@@ -7,26 +7,26 @@
 
 namespace apollonian {
 
-enum class IntersectionType {
-    Invalid = 0,
-    Inside = 1,
-    Outside = 2,
-    Intersects = 3,
+enum class intersection_type {
+    invalid = 0,
+    inside = 1,
+    outside = 2,
+    intersects = 3,
 };
 
 /* Axis-aligned box. */
-class Box {
+class box {
 public:
     double xmin;
     double xmax;
     double ymin;
     double ymax;
 
-    IntersectionType intersects_circle(const Circle& circle) const;
+    intersection_type intersects_circle(const circle& c) const;
 };
 
-inline Box
-make_box(const Complex& center, double width, double height) {
+inline box
+make_box(const dcomplex& center, double width, double height) {
     return {center.real() - width/2,
             center.real() + width/2,
             center.imag() - height/2,
@@ -38,29 +38,29 @@ inline T square(T t) {
     return t*t;
 }
 
-inline IntersectionType
-Box::intersects_circle(const Circle& circle) const {
-    if (circle.v00_ <= 0) {
+inline intersection_type
+box::intersects_circle(const circle& c) const {
+    if (c.v00_ <= 0) {
         /* Half space or disk complement */
-        if (circle(Complex(xmin, ymin)) >= 0 &&
-            circle(Complex(xmin, ymax)) >= 0 &&
-            circle(Complex(xmax, ymin)) >= 0 &&
-            circle(Complex(xmax, ymax)) >= 0)
+        if (c(dcomplex(xmin, ymin)) >= 0 &&
+            c(dcomplex(xmin, ymax)) >= 0 &&
+            c(dcomplex(xmax, ymin)) >= 0 &&
+            c(dcomplex(xmax, ymax)) >= 0)
         {
-            return IntersectionType::Outside;
+            return intersection_type::outside;
         }
 
-        return IntersectionType::Intersects;
+        return intersection_type::intersects;
     } else {
         /* Disk */
-        Complex center = circle.center();
-        double r = circle.radius();
+        dcomplex center = c.center();
+        double r = c.radius();
         double x = center.real();
         double y = center.imag();
         if (xmin + r <= x && x <= xmax - r &&
             ymin + r <= y && y <= ymax - r)
         {
-            return IntersectionType::Inside;
+            return intersection_type::inside;
         }
         double s = 0;
         if      (x < xmin) s += square(x - xmin);
@@ -68,9 +68,9 @@ Box::intersects_circle(const Circle& circle) const {
         if      (y < ymin) s += square(y - ymin);
         else if (y > ymax) s += square(y - ymax);
 
-        if (s <= square(r)) return IntersectionType::Intersects;
+        if (s <= square(r)) return intersection_type::intersects;
 
-        return IntersectionType::Outside;
+        return intersection_type::outside;
     }
 }
 

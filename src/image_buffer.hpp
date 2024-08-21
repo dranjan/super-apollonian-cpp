@@ -38,9 +38,9 @@ void fill_rect(const Pixel& value, Pixel* data,
 }
 
 template <typename Pixel>
-class ImageBuffer {
+class image_buffer {
 public:
-    ImageBuffer(int rows, int cols);
+    image_buffer(int rows, int cols);
 
     const Pixel& operator () (int row, int col) const;
     Pixel& operator () (int row, int col);
@@ -64,35 +64,35 @@ private:
 };
 
 template <typename Pixel>
-ImageBuffer<Pixel>::ImageBuffer(int rows, int cols)
+image_buffer<Pixel>::image_buffer(int rows, int cols)
     : rows_{rows}, cols_{cols}, data_{size_t(rows*cols)}
 {
 }
 
 template <typename Pixel>
 const Pixel&
-ImageBuffer<Pixel>::operator () (int row, int col) const {
+image_buffer<Pixel>::operator () (int row, int col) const {
     return data_[row*cols_ + col];
 }
 
 template <typename Pixel>
 Pixel&
-ImageBuffer<Pixel>::operator () (int row, int col) {
+image_buffer<Pixel>::operator () (int row, int col) {
     return data_[row*cols_ + col];
 }
 
 template <typename Pixel>
-const Pixel* ImageBuffer<Pixel>::operator [] (int row) const {
+const Pixel* image_buffer<Pixel>::operator [] (int row) const {
     return data_.data() + row*cols_;
 }
 
 template <typename Pixel>
-Pixel* ImageBuffer<Pixel>::operator [] (int row) {
+Pixel* image_buffer<Pixel>::operator [] (int row) {
     return data_.data() + row*cols_;
 }
 
 template <typename Pixel>
-void ImageBuffer<Pixel>::fill_row(
+void image_buffer<Pixel>::fill_row(
         const Pixel& value, int row,
         int col_begin, int col_end)
 {
@@ -105,7 +105,7 @@ void ImageBuffer<Pixel>::fill_row(
 }
 
 template <typename Pixel>
-void ImageBuffer<Pixel>::fill_rect(
+void image_buffer<Pixel>::fill_rect(
         const Pixel& value,
         int row_begin, int row_end,
         int col_begin, int col_end)
@@ -121,17 +121,17 @@ void ImageBuffer<Pixel>::fill_rect(
 }
 
 template <typename Pixel>
-void ImageBuffer<Pixel>::fill(const Pixel& value) {
+void image_buffer<Pixel>::fill(const Pixel& value) {
     ::fill_row(value, data_.data(), data_.data() + data_.size());
 }
 
 template <typename Pixel>
-int ImageBuffer<Pixel>::rows() const {
+int image_buffer<Pixel>::rows() const {
     return rows_;
 }
 
 template <typename Pixel>
-int ImageBuffer<Pixel>::cols() const {
+int image_buffer<Pixel>::cols() const {
     return cols_;
 }
 

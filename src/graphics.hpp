@@ -1,6 +1,6 @@
 /* This module implements some relatively low-level graphics primitives,
  * namely drawing the various types of generalized circle into an
- * ImageBuffer.
+ * image_buffer.
  *
  * All coordinates in the interface are in image pixels, unless noted
  * otherwise.
@@ -26,24 +26,24 @@
 
 /* Draw the circle with radius r centered at (xc, yc). */
 void
-draw_circle(ImageBuffer<apollonian::RGBColor>& image,
+draw_circle(image_buffer<apollonian::rgb_color>& image,
             double xc, double yc, double r,
-            const apollonian::RGBColor& new_color,
-            const apollonian::RGBColor& old_color);
+            const apollonian::rgb_color& new_color,
+            const apollonian::rgb_color& old_color);
 
 /* Draw the complement of the circle with radius r centered at (xc, yc).
  */
 void
-draw_circle_complement(ImageBuffer<apollonian::RGBColor>& image,
+draw_circle_complement(image_buffer<apollonian::rgb_color>& image,
                        double xc, double yc, double r,
-                       const apollonian::RGBColor& new_color,
-                       const apollonian::RGBColor& old_color);
+                       const apollonian::rgb_color& new_color,
+                       const apollonian::rgb_color& old_color);
 
 /* Draw the half-plane a*x + b*y + c <= 0. */
 void
-draw_half_plane(ImageBuffer<apollonian::RGBColor>& image,
+draw_half_plane(image_buffer<apollonian::rgb_color>& image,
                 double a, double b, double c,
-                const apollonian::RGBColor& new_color,
-                const apollonian::RGBColor& old_color);
+                const apollonian::rgb_color& new_color,
+                const apollonian::rgb_color& old_color);
 
 #endif // GRAPHICS_HPP

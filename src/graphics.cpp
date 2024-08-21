@@ -11,7 +11,7 @@
 
 #include <cmath>
 
-using apollonian::RGBColor;
+using apollonian::rgb_color;
 
 using std::min;
 using std::max;
@@ -177,10 +177,10 @@ double compute_line_boundary_fraction(
 } // namespace
 
 void
-draw_circle(ImageBuffer<RGBColor>& image,
+draw_circle(image_buffer<rgb_color>& image,
             double xc, double yc, double r,
-            const RGBColor& new_color,
-            const RGBColor& old_color)
+            const rgb_color& new_color,
+            const rgb_color& old_color)
 {
     int rows = image.rows();
     int cols = image.cols();
@@ -193,7 +193,7 @@ draw_circle(ImageBuffer<RGBColor>& image,
     int ymax{min(rows-1, int(floor(yc - 0.5 + (r+s))))};
     if (ymax < 0) return;
 
-    RGBColor diff = new_color - old_color;
+    rgb_color diff = new_color - old_color;
 
     for (int y = ymin; y <= ymax; ++y) {
         double d0 = sqrt(max(0.0, square(r+s) - square(y - yc + 0.5)));
@@ -229,10 +229,10 @@ draw_circle(ImageBuffer<RGBColor>& image,
     }
 }
 
-void draw_circle_complement(ImageBuffer<RGBColor>& image,
+void draw_circle_complement(image_buffer<rgb_color>& image,
                             double xc, double yc, double r,
-                            const RGBColor& new_color,
-                            const RGBColor& old_color)
+                            const rgb_color& new_color,
+                            const rgb_color& old_color)
 {
     int rows = image.rows();
     int cols = image.cols();
@@ -245,7 +245,7 @@ void draw_circle_complement(ImageBuffer<RGBColor>& image,
     int ymax{min(rows-1, int(floor(yc - 0.5 + (r+s))))};
     if (ymax < 0) return;
 
-    RGBColor diff = new_color - old_color;
+    rgb_color diff = new_color - old_color;
 
     for (int y = 0; y < ymin; ++y) {
         image.fill_row(new_color, y, 0, cols);
@@ -289,10 +289,10 @@ void draw_circle_complement(ImageBuffer<RGBColor>& image,
 }
 
 void
-draw_half_plane(ImageBuffer<apollonian::RGBColor>& image,
+draw_half_plane(image_buffer<apollonian::rgb_color>& image,
                 double a, double b, double c,
-                const apollonian::RGBColor& new_color,
-                const apollonian::RGBColor& old_color)
+                const apollonian::rgb_color& new_color,
+                const apollonian::rgb_color& old_color)
 {
     int rows = image.rows();
     int cols = image.cols();
@@ -302,7 +302,7 @@ draw_half_plane(ImageBuffer<apollonian::RGBColor>& image,
     b /= d;
     c /= d;
 
-    RGBColor diff = new_color - old_color;
+    rgb_color diff = new_color - old_color;
 
     if (a == 0) {
         int y = int(floor(-c/b));

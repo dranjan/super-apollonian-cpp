@@ -5,9 +5,9 @@
 
 namespace apollonian {
 
-Renderer::Renderer(
-        int w, int h, const Complex& center, double pixel_res,
-        const RGBColor& color)
+renderer::renderer(
+        int w, int h, const dcomplex& center, double pixel_res,
+        const rgb_color& color)
     : bbox_{make_box(center, w/pixel_res, h/pixel_res)},
       image_{h, w}, center_{center}, res_{pixel_res}
 {
@@ -25,7 +25,7 @@ get_component(int32_t value) {
 }
 
 inline unsigned char*
-write_pixel(const RGBColor& pixel, unsigned char* p) {
+write_pixel(const rgb_color& pixel, unsigned char* p) {
     *((uint32_t*)p) = (get_component(pixel.b_) << 0) +
                       (get_component(pixel.g_) << 8) +
                       (get_component(pixel.r_) << 16) +
@@ -33,7 +33,7 @@ write_pixel(const RGBColor& pixel, unsigned char* p) {
     return p + 4;
 }
 
-void Renderer::save(const std::string& filename) const {
+void renderer::save(const std::string& filename) const {
     int rows = image_.rows();
     int cols = image_.cols();
 

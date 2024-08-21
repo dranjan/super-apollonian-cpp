@@ -7,34 +7,34 @@
 namespace apollonian {
 
 template <typename G>
-class OppositeGroup {
+class opposite_group {
 public:
     template <typename... Args>
-    OppositeGroup(Args&&... args...);
+    opposite_group(Args&&... args...);
 
-    OppositeGroup(const OppositeGroup&) = default;
+    opposite_group(const opposite_group&) = default;
 
-    static const OppositeGroup<G> identity;
+    static const opposite_group<G> identity;
 
-    OppositeGroup<G> inverse() const;
-    OppositeGroup<G> operator * (const OppositeGroup<G>& other) const;
+    opposite_group<G> inverse() const;
+    opposite_group<G> operator * (const opposite_group<G>& other) const;
 
 public:
     G g_;
 };
 
 template <typename G0, typename G1>
-class ProductGroup {
+class product_group {
 public:
-    ProductGroup(const G0& g0, const G1& g1);
-    ProductGroup(const ProductGroup&) = default;
+    product_group(const G0& g0, const G1& g1);
+    product_group(const product_group&) = default;
 
-    static const ProductGroup<G0, G1> identity;
+    static const product_group<G0, G1> identity;
 
-    ProductGroup<G0, G1> inverse() const;
+    product_group<G0, G1> inverse() const;
 
-    ProductGroup<G0, G1>
-    operator * (const ProductGroup<G0, G1>& other) const;
+    product_group<G0, G1>
+    operator * (const product_group<G0, G1>& other) const;
 
 public:
     G0 g0_;
@@ -43,47 +43,47 @@ public:
 
 template <typename G>
 template <typename... Args>
-OppositeGroup<G>::OppositeGroup(Args&&... args...)
+opposite_group<G>::opposite_group(Args&&... args...)
     : g_{std::forward<Args>(args)...}
 {
 }
 
 template <typename G>
-const OppositeGroup<G>
-OppositeGroup<G>::identity{G::identity};
+const opposite_group<G>
+opposite_group<G>::identity{G::identity};
 
 template <typename G>
-OppositeGroup<G>
-OppositeGroup<G>::inverse() const {
+opposite_group<G>
+opposite_group<G>::inverse() const {
     return {g_.inverse()};
 }
 
 template <typename G>
-OppositeGroup<G>
-OppositeGroup<G>::operator * (const OppositeGroup<G>& other) const {
+opposite_group<G>
+opposite_group<G>::operator * (const opposite_group<G>& other) const {
     return {other.g_ * g_};
 }
 
 template <typename G0, typename G1>
-ProductGroup<G0, G1>::ProductGroup(const G0& g0, const G1& g1)
+product_group<G0, G1>::product_group(const G0& g0, const G1& g1)
     : g0_{g0}, g1_{g1}
 {
 }
 
 template <typename G0, typename G1>
-const ProductGroup<G0, G1>
-ProductGroup<G0, G1>::identity{G0::identity, G1::identity};
+const product_group<G0, G1>
+product_group<G0, G1>::identity{G0::identity, G1::identity};
 
 template <typename G0, typename G1>
-ProductGroup<G0, G1>
-ProductGroup<G0, G1>::inverse() const {
+product_group<G0, G1>
+product_group<G0, G1>::inverse() const {
     return {g0_.inverse(), g1_.inverse()};
 }
 
 template <typename G0, typename G1>
-ProductGroup<G0, G1>
-ProductGroup<G0, G1>::operator * (
-        const ProductGroup<G0, G1>& other) const
+product_group<G0, G1>
+product_group<G0, G1>::operator * (
+        const product_group<G0, G1>& other) const
 {
     return {g0_*other.g0_, g1_*other.g1_};
 }

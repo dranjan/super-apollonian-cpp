@@ -5,34 +5,34 @@
 
 namespace apollonian {
 
-using Complex = std::complex<double>;
+using dcomplex = std::complex<double>;
 
 using namespace std::complex_literals;
 
 /* Projective complex number */
-class PComplex {
+class pcomplex {
 public:
-    PComplex() = default;
-    PComplex(const Complex& numerator,
-             const Complex& denominator);
-    PComplex(const Complex& value);
+    pcomplex() = default;
+    pcomplex(const dcomplex& numerator,
+             const dcomplex& denominator);
+    pcomplex(const dcomplex& value);
 
-    operator Complex() const;
+    operator dcomplex() const;
 
 public:
-    Complex v0_;
-    Complex v1_;
+    dcomplex v0_;
+    dcomplex v1_;
 };
 
 inline
-PComplex::PComplex(const Complex& numerator,
-                   const Complex& denominator)
+pcomplex::pcomplex(const dcomplex& numerator,
+                   const dcomplex& denominator)
     : v0_{numerator}, v1_{denominator}
 {
 }
 
 inline
-PComplex::PComplex(const Complex& value) {
+pcomplex::pcomplex(const dcomplex& value) {
     if (std::isinf(value.real()) || std::isinf(value.imag())) {
         v0_ = 1;
         v1_ = 0;
@@ -43,7 +43,7 @@ PComplex::PComplex(const Complex& value) {
 }
 
 inline
-PComplex::operator Complex() const {
+pcomplex::operator dcomplex() const {
     return v0_/v1_;
 }
 
