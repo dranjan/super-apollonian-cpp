@@ -2,13 +2,17 @@
 
 ## Prerequisites
 
-- `meson` build system (`meson` on Ubuntu)
-- `ninja` build tool (`ninja-build` on Ubuntu)
+- `meson` build system
+- `ninja` build tool
 - C++ compiler
-- `cairomm` (`libcairomm-1.0-dev` on Ubuntu)
+- `cairomm`
 
 This code has only been tested on Linux, but it would probably work
 on other OSes with some minor modifications.
+
+On Arch Linux:
+
+    pacman -S meson ninja gcc cairomm
 
 ## Execution
 
