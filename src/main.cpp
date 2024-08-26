@@ -2,7 +2,9 @@
 #include <cassert>
 #include <algorithm>
 #include <iostream>
+#include <mutex>
 #include <string>
+#include <thread>
 
 #include "riemann_sphere.hpp"
 #include "circle.hpp"
@@ -39,9 +41,14 @@ public:
     using state = apollonian_state<extra_data>;
 
 public:
-    rendering_visitor(renderer& renderer_,
+    rendering_visitor(renderer&& renderer_,
+                      double threshold,
+                      const std::array<std::array<double, 4>, 3>& color_table);
+    rendering_visitor(renderer&& renderer_,
                       double threshold,
                       const std::array<rgb_color, 4>& colors);
+
+    rendering_visitor window(int col0, int row0, int cols, int rows) const;
 
     /* Callbacks */
     bool visit_node(const state& s);
@@ -50,8 +57,12 @@ public:
                         const apollonian_transformation& t) const;
 
     void render(const pcomplex& a, const pcomplex& b, const pcomplex& c);
+    void render_window(const pcomplex& a, const pcomplex& b, const pcomplex& c,
+                       int col0, int row0, int cols, int rows,
+                       std::mutex& mutex);
 
     void report() const;
+    void save(const std::string& filename) const;
 
 protected:
     bool visit_node_a(const state& s);
@@ -60,7 +71,7 @@ protected:
     void set_fg(extra_data& extra) const;
 
 private:
-    renderer& renderer_;
+    renderer renderer_;
     double threshold_;
     int count_;
 
@@ -76,7 +87,16 @@ rendering_visitor::color_data::operator | (
 }
 
 rendering_visitor::rendering_visitor(
-    renderer& renderer_,
+    renderer&& renderer_,
+    double threshold,
+    const std::array<std::array<double, 4>, 3>& color_table)
+    : renderer_{renderer_}, threshold_{threshold}, count_{0},
+      color_table_{color_table}
+{
+}
+
+rendering_visitor::rendering_visitor(
+    renderer&& renderer_,
     double threshold,
     const std::array<rgb_color, 4>& colors)
     : renderer_{renderer_}, threshold_{threshold}, count_{0}
@@ -86,6 +106,12 @@ rendering_visitor::rendering_visitor(
         color_table_[1][k] = double(colors[k].g_)/0x7fffffff;
         color_table_[2][k] = double(colors[k].b_)/0x7fffffff;
     }
+}
+
+rendering_visitor rendering_visitor::window(
+    int col0, int row0, int cols, int rows) const
+{
+    return {renderer_.window(col0, row0, cols, rows), threshold_, color_table_};
 }
 
 inline void
@@ -176,7 +202,7 @@ rendering_visitor::get_data(const state& parent, node_type type,
 
     if (data.intersection_type_ == intersection_type::intersects) {
         data.intersection_type_ =
-            renderer_.bbox_.intersects_circle(c);
+            renderer_.intersects_circle(c);
     }
     if (type == node_type::B &&
         data.intersection_type_ != intersection_type::outside)
@@ -232,8 +258,23 @@ rendering_visitor::render(const pcomplex& a,
 }
 
 void
+rendering_visitor::render_window(
+    const pcomplex& a, const pcomplex& b, const pcomplex& c,
+    int col0, int row0, int cols, int rows, std::mutex& mutex)
+{
+    rendering_visitor visitor = window(col0, row0, cols, rows);
+    visitor.render(a, b, c);
+    std::lock_guard<std::mutex> guard(mutex);
+    renderer_.set_window(col0, row0, visitor.renderer_);
+}
+
+void
 rendering_visitor::report() const {
     std::cout << "Circles rendered: " << count_ << std::endl;
+}
+
+void rendering_visitor::save(const std::string& filename) const {
+    renderer_.save(filename);
 }
 
 int main(int argc, char* argv[]) {
@@ -261,7 +302,8 @@ int main(int argc, char* argv[]) {
     size_t h = 2160 / scale_down;
     double res = 1000 / scale_down;
     rgb_color bgcolor = rgb_color::black;
-    renderer renderer_(w, h, dcomplex(-2.4, -2.0), res, bgcolor);
+    renderer renderer_(w, h, dcomplex(-2.4, -2.0), res);
+    renderer_.fill(bgcolor);
 
     double f = -(2 + std::sqrt(3.0));
     dcomplex z = 0.6 + 0.8i;
@@ -269,11 +311,11 @@ int main(int argc, char* argv[]) {
     dcomplex b{f*z};
     dcomplex c{f*z*z};
 
-    rendering_visitor visitor{renderer_, threshold_factor/res,
+    rendering_visitor visitor{std::move(renderer_), threshold_factor/res,
                               {c0, c1, c2, c3}};
     visitor.render(a, b, c);
     visitor.report();
-    renderer_.save(filename);
+    visitor.save(filename);
 
     return 0;
 }

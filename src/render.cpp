@@ -1,23 +1,53 @@
 #include "render.hpp"
 
+#include <algorithm>
+
 #include <cairomm/context.h>
 #include <cairomm/surface.h>
 
 namespace apollonian {
 
-renderer::renderer(
-        int w, int h, const dcomplex& center, double pixel_res,
-        const rgb_color& color)
-    : bbox_{make_box(center, w/pixel_res, h/pixel_res)},
-      image_{h, w}, center_{center}, res_{pixel_res}
+renderer::renderer(double x0, double y0, int w, int h, double res)
+    : x0_{x0}, y0_{y0}, image_{h, w}, res_{res}
 {
-    image_.fill(color);
+    dcomplex z1 = unmap(image_.cols(), image_.rows());
+    bbox_ = {x0_, z1.real(), y0_, z1.imag()};
+}
+
+renderer::renderer(
+        int w, int h, const dcomplex& center, double res)
+    : renderer{center.real() - 0.5*w/res, center.imag() - 0.5*h/res, w, h, res}
+{
+}
+
+renderer renderer::window(int col0, int row0, int cols, int rows) const {
+    if (col0 + cols > image_.cols()) cols = image_.cols() - col0;
+    if (row0 + rows > image_.rows()) rows = image_.rows() - row0;
+    dcomplex z0 = unmap(col0, row0);
+    renderer window_renderer{z0.real(), z0.imag(), cols, rows, res_};
+    for (int row = 0; row < rows; ++row) {
+        const rgb_color* src = image_[row0 + row] + col0;
+        rgb_color* dst = window_renderer.image_[row];
+        std::copy(src, src + cols, dst);
+    }
+    return window_renderer;
+}
+
+void renderer::set_window(int col0, int row0, const renderer& window) {
+    int rows = window.image_.rows();
+    int cols = window.image_.cols();
+    for (int row = 0; row < rows; ++row) {
+        const rgb_color* src = window.image_[row];
+        rgb_color* dst = image_[row0 + row] + col0;
+        std::copy(src, src + cols, dst);
+    }
 }
 
 template <typename T>
 inline T clamp(const T& value, const T& min, const T& max) {
     return std::min(max, std::max(min, value));
 }
+
 inline uint8_t
 get_component(int32_t value) {
     if (value < 0) return 0;

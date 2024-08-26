@@ -17,12 +17,13 @@ enum class intersection_type {
 /* Axis-aligned box. */
 class box {
 public:
+    intersection_type intersects_circle(const circle& c) const;
+
+public:
     double xmin;
     double xmax;
     double ymin;
     double ymax;
-
-    intersection_type intersects_circle(const circle& c) const;
 };
 
 inline box
