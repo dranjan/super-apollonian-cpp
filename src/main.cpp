@@ -264,7 +264,9 @@ rendering_visitor::render_window(
 {
     rendering_visitor visitor = window(col0, row0, cols, rows);
     visitor.render(a, b, c);
-    std::lock_guard<std::mutex> guard(mutex);
+    std::unique_lock<std::mutex> lock(mutex);
+    std::cout << "(" << col0 << ", " << row0 << ") ";
+    visitor.report();
     renderer_.set_window(col0, row0, visitor.renderer_);
 }
 
