@@ -409,7 +409,9 @@ int main(int argc, char* argv[]) {
     rendering_visitor visitor{std::move(renderer_), threshold_factor/res,
                               {c0, c1, c2, c3}};
 
-    rendering_grid grid(32, a, b, c, 256, 256, visitor);
+    int num_threads = std::thread::hardware_concurrency();
+    int cell_size = 256;
+    rendering_grid grid(num_threads, a, b, c, cell_size, cell_size, visitor);
     grid.run();
 
     visitor.save(filename);
