@@ -19,4 +19,5 @@ main_prog = executable('main',
 custom_target('result',
   output: 'apollonian.png',
   command: [main_prog, '@OUTPUT@'],
-  build_by_default: true)
+  build_by_default: true,
+  console: true)

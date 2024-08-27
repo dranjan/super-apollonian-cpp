@@ -64,6 +64,9 @@ public:
     void report() const;
     void save(const std::string& filename) const;
 
+    int cols() const;
+    int rows() const;
+
 protected:
     bool visit_node_a(const state& s);
     bool visit_node_b(const state& s);
@@ -78,6 +81,14 @@ private:
     /* indexed by [rgb_index][data_index] */
     std::array<std::array<double, 4>, 3> color_table_;
 };
+
+int rendering_visitor::cols() const {
+    return renderer_.image_.cols();
+}
+
+int rendering_visitor::rows() const {
+    return renderer_.image_.rows();
+}
 
 rendering_visitor::color_data
 rendering_visitor::color_data::operator | (
@@ -279,6 +290,88 @@ void rendering_visitor::save(const std::string& filename) const {
     renderer_.save(filename);
 }
 
+class rendering_grid {
+public:
+    rendering_grid(
+        int num_threads,
+        const pcomplex& a,
+        const pcomplex& b,
+        const pcomplex& c,
+        int cols, int rows,
+        rendering_visitor& visitor);
+
+    void run();
+
+private:
+    bool next_cell(int& col0, int& row0);
+    void do_work();
+
+public:
+    /* Constants */
+    pcomplex a_;
+    pcomplex b_;
+    pcomplex c_;
+    int cols_;
+    int rows_;
+    int num_threads_;
+
+    rendering_visitor* visitor_;
+    std::mutex render_mutex_;
+
+private:
+    /* State */
+    int col0_;
+    int row0_;
+
+    std::mutex dispatch_mutex_;
+};
+
+rendering_grid::rendering_grid(
+    int num_threads,
+    const pcomplex& a,
+    const pcomplex& b,
+    const pcomplex& c,
+    int cols, int rows,
+    rendering_visitor& visitor)
+    : a_{a}, b_{b}, c_{c}, cols_{cols}, rows_{rows}, num_threads_{num_threads},
+      visitor_{&visitor},
+      col0_{0}, row0_{0}
+{
+}
+
+void rendering_grid::do_work() {
+    int col0;
+    int row0;
+    while (next_cell(col0, row0)) {
+        visitor_->render_window(
+            a_, b_, c_, col0, row0, cols_, rows_, render_mutex_);
+    }
+}
+
+bool rendering_grid::next_cell(int& col0, int& row0) {
+    std::unique_lock<std::mutex> lock(dispatch_mutex_);
+    if (row0_ >= visitor_->rows()) {
+        return false;
+    }
+    col0 = col0_;
+    row0 = row0_;
+    std::cout << "Dispatch: " << col0 << ", " << row0 << std::endl;
+    col0_ += cols_;
+    if (col0_ >= visitor_->cols()) {
+        col0_ = 0;
+        row0_ += rows_;
+    }
+    return true;
+}
+
+void rendering_grid::run() {
+    std::vector<std::thread> workers;
+    for (int k = 0; k < num_threads_; ++k) {
+        workers.emplace_back(&rendering_grid::do_work, this);
+    }
+    for (auto& worker : workers) worker.join();
+}
+
 int main(int argc, char* argv[]) {
     if (argc < 2) {
         std::cerr << "usage: " << argv[0]
@@ -315,8 +408,10 @@ int main(int argc, char* argv[]) {
 
     rendering_visitor visitor{std::move(renderer_), threshold_factor/res,
                               {c0, c1, c2, c3}};
-    visitor.render(a, b, c);
-    visitor.report();
+
+    rendering_grid grid(32, a, b, c, 256, 256, visitor);
+    grid.run();
+
     visitor.save(filename);
 
     return 0;
