@@ -8,7 +8,8 @@ sources = [
   'src/apollonian.cpp',
   'src/color.cpp',
   'src/render.cpp',
-  'src/graphics.cpp'
+  'src/graphics.cpp',
+  'src/visitor.cpp'
 ]
 
 main_prog = executable('main',
