@@ -1,6 +1,7 @@
 project('apollonian', 'cpp')
 
 cairodep = dependency('cairomm-1.0')
+threaddep = dependency('threads')
 
 sources = [
   'src/main.cpp',
@@ -14,7 +15,7 @@ sources = [
 
 main_prog = executable('main',
   sources: sources,
-  dependencies: [cairodep],
+  dependencies: [cairodep, threaddep],
   cpp_args: ['-std=c++14'])
 
 custom_target('result',
