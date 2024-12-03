@@ -1,3 +1,10 @@
+/* SPDX-License-Identifier: GPL-3.0-only
+ *
+ * Copyright 2024 Darsh Ranjan.
+ *
+ * This file is part of super-apollonian-cpp.
+ */
+
 #ifndef COLOR_HPP
 #define COLOR_HPP
 

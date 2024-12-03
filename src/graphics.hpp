@@ -1,3 +1,10 @@
+/* SPDX-License-Identifier: GPL-3.0-only
+ *
+ * Copyright 2024 Darsh Ranjan.
+ *
+ * This file is part of super-apollonian-cpp.
+ */
+
 /* This module implements some relatively low-level graphics primitives,
  * namely drawing the various types of generalized circle into an
  * image_buffer.

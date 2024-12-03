@@ -1,3 +1,10 @@
+/* SPDX-License-Identifier: GPL-3.0-only
+ *
+ * Copyright 2024 Darsh Ranjan.
+ *
+ * This file is part of super-apollonian-cpp.
+ */
+
 /* In this implementation, we define each pixel to be a square with unit
  * side length centered at the pixel's nominal coordinates. This is not
  * the only possible definition of a pixel, or necessarily the best, but
