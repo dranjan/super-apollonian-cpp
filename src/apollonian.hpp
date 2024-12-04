@@ -21,6 +21,13 @@
 
 namespace apollonian {
 
+/* This is the transformation type that relates disks to one another,
+ * or simply different views of the fractal to one another. Each
+ * transformation is a pair of a Mobius transformation that says how to
+ * transform the plane, and a permutation that says how to switch the
+ * colors around. As a small quirk of this implementation, the Mobius
+ * transformation and permutation act on opposite sides.
+ */
 using apollonian_transformation
     = product_group<mobius_transformation,
                     opposite_group<permutation<4>>>;
