@@ -11,7 +11,6 @@
 #include <cassert>
 
 #include <vector>
-#include <algorithm>
 
 #include "circle.hpp"
 #include "mobius.hpp"

@@ -10,7 +10,6 @@
 
 #include "riemann_sphere.hpp"
 #include "circle.hpp"
-#include "apollonian.hpp"
 
 namespace apollonian {
 

@@ -31,26 +31,30 @@
 #include "color.hpp"
 #include "image_buffer.hpp"
 
+namespace apollonian {
+
 /* Draw the circle with radius r centered at (xc, yc). */
 void
-draw_circle(image_buffer<apollonian::rgb_color>& image,
+draw_circle(image_buffer<rgb_color>& image,
             double xc, double yc, double r,
-            const apollonian::rgb_color& new_color,
-            const apollonian::rgb_color& old_color);
+            const rgb_color& new_color,
+            const rgb_color& old_color);
 
 /* Draw the complement of the circle with radius r centered at (xc, yc).
  */
 void
-draw_circle_complement(image_buffer<apollonian::rgb_color>& image,
+draw_circle_complement(image_buffer<rgb_color>& image,
                        double xc, double yc, double r,
-                       const apollonian::rgb_color& new_color,
-                       const apollonian::rgb_color& old_color);
+                       const rgb_color& new_color,
+                       const rgb_color& old_color);
 
 /* Draw the half-plane a*x + b*y + c <= 0. */
 void
-draw_half_plane(image_buffer<apollonian::rgb_color>& image,
+draw_half_plane(image_buffer<rgb_color>& image,
                 double a, double b, double c,
-                const apollonian::rgb_color& new_color,
-                const apollonian::rgb_color& old_color);
+                const rgb_color& new_color,
+                const rgb_color& old_color);
+
+} // apollonian
 
 #endif // GRAPHICS_HPP

@@ -9,7 +9,6 @@
 #define GROUPS_HPP
 
 #include <utility>
-#include <tuple>
 
 namespace apollonian {
 

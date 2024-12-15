@@ -9,8 +9,6 @@
 #define VISITOR_HPP
 
 #include <mutex>
-#include <string>
-#include <thread>
 
 #include "riemann_sphere.hpp"
 #include "apollonian.hpp"

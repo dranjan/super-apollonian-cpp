@@ -8,6 +8,7 @@
 #include <cmath>
 #include <iostream>
 #include <string>
+#include <thread>
 
 #include "filters.hpp"
 #include "io.hpp"

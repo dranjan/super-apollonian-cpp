@@ -7,7 +7,9 @@
 
 #include "visitor.hpp"
 
+#include <algorithm>
 #include <iostream>
+#include <thread>
 
 namespace apollonian {
 

@@ -18,7 +18,7 @@
 
 #include <cmath>
 
-using apollonian::rgb_color;
+namespace apollonian {
 
 using std::min;
 using std::max;
@@ -296,10 +296,10 @@ void draw_circle_complement(image_buffer<rgb_color>& image,
 }
 
 void
-draw_half_plane(image_buffer<apollonian::rgb_color>& image,
+draw_half_plane(image_buffer<rgb_color>& image,
                 double a, double b, double c,
-                const apollonian::rgb_color& new_color,
-                const apollonian::rgb_color& old_color)
+                const rgb_color& new_color,
+                const rgb_color& old_color)
 {
     int rows = image.rows();
     int cols = image.cols();
@@ -370,3 +370,5 @@ draw_half_plane(image_buffer<apollonian::rgb_color>& image,
         }
     }
 }
+
+} // apollonian

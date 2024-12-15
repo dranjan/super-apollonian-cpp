@@ -11,7 +11,8 @@
 #include <cstring>
 
 #include <vector>
-#include <algorithm>
+
+namespace apollonian {
 
 template <typename Pixel>
 void fill_row(const Pixel& value, Pixel* begin, Pixel* end) {
@@ -111,7 +112,7 @@ void image_buffer<Pixel>::fill_row(
     if (col_end > cols_) col_end = cols_;
 
     Pixel* row_ptr = operator [] (row);
-    ::fill_row(value, row_ptr + col_begin, row_ptr + col_end);
+    apollonian::fill_row(value, row_ptr + col_begin, row_ptr + col_end);
 }
 
 template <typename Pixel>
@@ -125,14 +126,14 @@ void image_buffer<Pixel>::fill_rect(
     if (col_begin < 0) col_begin = 0;
     if (col_end > cols_) col_end = cols_;
 
-    ::fill_rect(value, data_.data() + row_begin*cols_ + col_begin,
-                row_end - row_begin, col_end - col_begin,
-                cols_*sizeof(Pixel));
+    apollonian::fill_rect(value, data_.data() + row_begin*cols_ + col_begin,
+                          row_end - row_begin, col_end - col_begin,
+                          cols_*sizeof(Pixel));
 }
 
 template <typename Pixel>
 void image_buffer<Pixel>::fill(const Pixel& value) {
-    ::fill_row(value, data_.data(), data_.data() + data_.size());
+    apollonian::fill_row(value, data_.data(), data_.data() + data_.size());
 }
 
 template <typename Pixel>
@@ -145,5 +146,6 @@ int image_buffer<Pixel>::cols() const {
     return cols_;
 }
 
+} // apollonian
 
 #endif // IMAGE_BUFFER_HPP

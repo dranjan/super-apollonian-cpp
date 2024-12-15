@@ -9,9 +9,6 @@
 #define FILTERS_HPP
 
 #include <memory>
-#include <mutex>
-#include <string>
-#include <thread>
 
 #include "color.hpp"
 #include "image_buffer.hpp"
