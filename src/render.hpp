@@ -28,7 +28,6 @@ public:
     void render_circle(const circle& circle, const rgb_color& new_color,
                        const rgb_color& old_color);
     void fill(const rgb_color& color);
-    void save(const std::string& filename) const;
     void map(const dcomplex& z, double& col, double& row) const;
     dcomplex unmap(double col, double row) const;
     intersection_type intersects_circle(const circle& c) const;

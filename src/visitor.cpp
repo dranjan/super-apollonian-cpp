@@ -217,10 +217,6 @@ rendering_visitor::report() const {
     std::cout << "Circles rendered: " << count_ << std::endl;
 }
 
-void rendering_visitor::save(const std::string& filename) const {
-    renderer_.save(filename);
-}
-
 rendering_grid::rendering_grid(
     int num_threads,
     const pcomplex& z0,

@@ -67,10 +67,13 @@ public:
                        std::mutex& mutex);
 
     void report() const;
-    void save(const std::string& filename) const;
 
     int cols() const;
     int rows() const;
+
+    const image_buffer<rgb_color>& buffer() const {
+        return renderer_.image_;
+    }
 
 protected:
     bool visit_node_a(const state& s);

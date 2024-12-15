@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 
+#include "io.hpp"
 #include "visitor.hpp"
 
 using namespace apollonian;
@@ -55,7 +56,7 @@ int main(int argc, char* argv[]) {
     rendering_grid grid(num_threads, a, b, c, cell_size, cell_size, visitor);
     grid.run();
 
-    visitor.save(filename);
+    save_image(visitor.buffer(), filename);
 
     return 0;
 }
