@@ -218,6 +218,11 @@ Since the square PSFs still aren't difficult to implement, this
 implementation uses that, but circular PSFs are a perfectly
 valid alternative and can still lead to an excellent result.
 
+### Postprocessing
+
+Unsharp masking slightly improves the overall appearance, so that is
+applied by default.
+
 ## The Code
 
 In my opinion the code quality in this implementation is "decent."
