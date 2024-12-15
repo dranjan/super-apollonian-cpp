@@ -11,6 +11,7 @@ sources = [
   'src/render.cpp',
   'src/graphics.cpp',
   'src/visitor.cpp',
+  'src/filters.cpp',
   'src/io.cpp',
 ]
 

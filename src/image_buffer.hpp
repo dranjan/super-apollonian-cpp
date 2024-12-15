@@ -72,8 +72,11 @@ private:
 
 template <typename Pixel>
 image_buffer<Pixel>::image_buffer(int rows, int cols)
-    : rows_{rows}, cols_{cols}, data_{size_t(rows*cols)}
+    : rows_{rows}, cols_{cols}
 {
+    // There's a weird compilation error when this is in the
+    // initialization list, when Pixel is `double`.
+    data_.resize(rows*cols);
 }
 
 template <typename Pixel>
