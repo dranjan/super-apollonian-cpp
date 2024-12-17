@@ -13,6 +13,7 @@ sources = [
   'src/visitor.cpp',
   'src/filters.cpp',
   'src/io.cpp',
+  'src/concurrency.cpp',
 ]
 
 main_prog = executable('main',

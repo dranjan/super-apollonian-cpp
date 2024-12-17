@@ -8,8 +8,7 @@
 #ifndef VISITOR_HPP
 #define VISITOR_HPP
 
-#include <mutex>
-
+#include "concurrency.hpp"
 #include "riemann_sphere.hpp"
 #include "apollonian.hpp"
 #include "render.hpp"
@@ -92,7 +91,7 @@ private:
  * Wraps a rendering_visitor object with logic to subdivide the image
  * into subcells and render multiple cells in parallel.
  */
-class rendering_grid {
+class rendering_grid : public grid_dispatch {
 public:
     rendering_grid(
         int num_threads,     /* Number of cells to render in parallel. */
@@ -102,29 +101,17 @@ public:
         int cols, int rows,  /* Cell dimensions. */
         rendering_visitor& visitor);
 
-    void run();
-
-private:
-    bool next_cell(int& col0, int& row0);
-    void do_work();
+protected:
+    virtual void run_cell(int col0, int row0, int cols, int rows,
+                          std::mutex& run_mutex) override;
 
 private:
     /* Constants */
     pcomplex z0_;
     pcomplex z1_;
     pcomplex z2_;
-    int cols_;
-    int rows_;
-    int num_threads_;
-
-    /* State */
-    int col0_;
-    int row0_;
-
-    std::mutex dispatch_mutex_;
 
     rendering_visitor* visitor_;
-    std::mutex render_mutex_;
 };
 
 } // apollonian

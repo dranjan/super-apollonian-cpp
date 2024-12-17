@@ -9,7 +9,6 @@
 
 #include <algorithm>
 #include <iostream>
-#include <thread>
 
 namespace apollonian {
 
@@ -226,44 +225,17 @@ rendering_grid::rendering_grid(
     const pcomplex& z2,
     int cols, int rows,
     rendering_visitor& visitor)
-    : z0_{z0}, z1_{z1}, z2_{z2}, cols_{cols}, rows_{rows},
-      num_threads_{num_threads},
-      col0_{0}, row0_{0},
+    : grid_dispatch(num_threads, visitor.cols(), visitor.rows(), cols, rows),
+      z0_{z0}, z1_{z1}, z2_{z2},
       visitor_{&visitor}
 {
 }
 
-void rendering_grid::do_work() {
-    int col0;
-    int row0;
-    while (next_cell(col0, row0)) {
-        visitor_->render_window(
-            z0_, z1_, z2_, col0, row0, cols_, rows_, render_mutex_);
-    }
-}
-
-bool rendering_grid::next_cell(int& col0, int& row0) {
-    std::unique_lock<std::mutex> lock(dispatch_mutex_);
-    if (row0_ >= visitor_->rows()) {
-        return false;
-    }
-    col0 = col0_;
-    row0 = row0_;
-    std::cout << "Dispatch: " << col0 << ", " << row0 << std::endl;
-    col0_ += cols_;
-    if (col0_ >= visitor_->cols()) {
-        col0_ = 0;
-        row0_ += rows_;
-    }
-    return true;
-}
-
-void rendering_grid::run() {
-    std::vector<std::thread> workers;
-    for (int k = 0; k < num_threads_; ++k) {
-        workers.emplace_back(&rendering_grid::do_work, this);
-    }
-    for (auto& worker : workers) worker.join();
+void rendering_grid::run_cell(int col0, int row0, int cols, int rows,
+                              std::mutex& run_mutex)
+{
+    visitor_->render_window(
+        z0_, z1_, z2_, col0, row0, cols, rows, run_mutex);
 }
 
 } // apollonian
